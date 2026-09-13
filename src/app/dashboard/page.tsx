@@ -1,0 +1,6 @@
+import { Button, EmptyChart, SectionHeading, StatCard } from "@/components/ui";
+import { PageHeader } from "@/components/PageHeader";
+
+export default function DashboardPage() {
+  return <div className="page"><PageHeader eyebrow="VUE D'ENSEMBLE" title="Dashboard" description="Les indicateurs clés de votre exploitation." action={<Button variant="ghost">↓ Export Excel</Button>} /><div className="filter-row"><button>Filtre lot</button><button>Filtre bassin</button><button>Filtre période</button></div><div className="stats-grid"><StatCard label="GMQ moyen" value="+ 2,8 g/j" detail="↑ 8,4% ce mois" /><StatCard label="ICA" value="1,42" detail="Objectif: 1,50" /><StatCard label="Biomasse totale" value="842 kg" detail="5 modules actifs" /><StatCard label="Taux mortalité" value="1,8%" detail="Sous surveillance" /></div><div className="charts-grid"><section className="panel"><SectionHeading title="Évolution du poids moyen" /><EmptyChart>Courbe de croissance par lot</EmptyChart></section><section className="panel"><SectionHeading title="Distribution de la biomasse" /><EmptyChart>Répartition par module</EmptyChart></section></div><div className="ai-alert">✦ <span><strong>Widget recommandation IA</strong> · Une anomalie de croissance est à vérifier sur le lot 13.</span><button>Voir l'analyse →</button></div></div>;
+}
