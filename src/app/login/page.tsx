@@ -1,5 +1,3 @@
-import Link from "next/link";
-
 export default function LoginPage() {
 	return (
 		<div className="login-page">
@@ -18,9 +16,6 @@ export default function LoginPage() {
 				<button className="button button-primary" type="submit">
 					Se connecter
 				</button>
-				<Link href="/" className="back-link">
-					← Retour à l &apos;accueil
-				</Link>
 			</form>
 		</div>
 	);

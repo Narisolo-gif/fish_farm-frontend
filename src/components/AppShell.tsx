@@ -1,7 +1,16 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { modules } from "@/lib/data";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+
+  if (pathname === "/login") {
+    return children;
+  }
+
   return (
     <div className="app-shell">
       <header className="topbar">
