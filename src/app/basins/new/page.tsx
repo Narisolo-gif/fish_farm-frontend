@@ -1,5 +1,54 @@
 import { Button } from "@/components/ui";
 import { Breadcrumb, PageHeader } from "@/components/PageHeader";
 
-export default function NewBasinPage() { return <div className="page"><Breadcrumb items={["Bassins", "Nouveau"]} /><PageHeader title="Configuration bassin" description="Ajoutez un bassin et ses paramètres de capacité." /><form className="form-card wide"><div className="form-grid"><Field label="Référence" placeholder="B-03" /><Field label="Type" placeholder="Bassin" /><Field label="Capacité max" placeholder="Ex. 240" /><Field label="Superficie" placeholder="Ex. 120 m²" /><Field label="Profondeur" placeholder="Ex. 1,4 m" /></div><label>Description<textarea placeholder="Notes et informations complémentaires" /></label><div className="subsection"><div className="subsection-heading"><strong>Happas de ce bassin</strong><Button variant="ghost">+ Ajouter un happa</Button></div><div className="happa-input"><span>01</span><input placeholder="Référence" /><input placeholder="Capacité max" /><button type="button">×</button></div></div><div className="form-actions"><Button variant="ghost" href="/production/grossissement/basins">Annuler</Button><Button>Enregistrer le bassin</Button></div></form></div>; }
-function Field({ label, placeholder }: { label: string; placeholder: string }) { return <label>{label}<input placeholder={placeholder} /></label>; }
+export default function NewBasinPage() {
+    return (
+        <div className="page">
+            <Breadcrumb items={["Bassins", "Nouveau"]} />
+            <PageHeader
+                title="Configuration bassin"
+                description="Ajoutez un bassin et ses paramètres de capacité."
+            />
+            <form className="form-card wide">
+                <div className="form-grid">
+                    <Field label="Référence" placeholder="B-03" />
+                    <Field label="Type" placeholder="Bassin" />
+                    <Field label="Capacité max" placeholder="Ex. 240" />
+                    <Field label="Superficie" placeholder="Ex. 120 m²" />
+                    <Field label="Profondeur" placeholder="Ex. 1,4 m" />
+                </div>
+                <label>
+                    Description
+                    <textarea placeholder="Notes et informations complémentaires" />
+                </label>
+                <div className="subsection">
+                    <div className="subsection-heading">
+                        <strong>Happas de ce bassin</strong>
+                        <Button variant="ghost">+ Ajouter un happa</Button>
+                    </div>
+                    <div className="happa-input">
+                        <span>01</span>
+                        <input placeholder="Référence" />
+                        <input placeholder="Capacité max" />
+                        <button type="button">×</button>
+                    </div>
+                </div>
+                <div className="form-actions">
+                    <Button variant="ghost" href="/production/grossissement/basins">
+                        Annuler
+                    </Button>
+                    <Button>Enregistrer le bassin</Button>
+                </div>
+            </form>
+        </div>
+    );
+}
+
+function Field({ label, placeholder }: { label: string; placeholder: string }) {
+    return (
+        <label>
+            {label}
+            <input placeholder={placeholder} />
+        </label>
+    );
+}

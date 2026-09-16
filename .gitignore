@@ -18,3 +18,5 @@ pnpm-debug.log*
 
 .vscode/
 .idea/
+
+*.tsbuildinfo

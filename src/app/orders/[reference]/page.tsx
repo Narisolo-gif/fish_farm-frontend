@@ -1,5 +1,58 @@
 import { Breadcrumb, PageHeader } from "@/components/PageHeader";
 import { orders } from "@/lib/data";
 
-export default async function OrderDetailsPage({ params }: { params: Promise<{ reference: string }> }) { const { reference } = await params; const order = orders.find((item) => item.reference === reference) ?? orders[0]; return <div className="page"><Breadcrumb items={["Commandes", order.reference]} /><PageHeader title={order.reference} description={`${order.status} · ${order.date}`} /><div className="detail-grid"><section className="panel"><Section title="Informations commande"><p>Fournisseur <b>{order.supplier}</b></p><p>Quantité commandée <b>24 sacs</b></p><p>Montant <b>{order.amount}</b></p></Section></section><section className="panel"><Section title="Flux de stock lié"><p>Entrée stock <b>À réception</b></p><p>Dispatch vers bassin <b>À planifier</b></p><p>Consommation <b>Non démarrée</b></p></Section></section></div></div>; }
-function Section({ title, children }: { title: string; children: React.ReactNode }) { return <><h2>{title}</h2><div className="detail-content">{children}</div></>; }
+export default async function OrderDetailsPage({
+  params,
+}: {
+  params: Promise<{ reference: string }>;
+}) {
+  const { reference } = await params;
+  const order = orders.find((item) => item.reference === reference) ?? orders[0];
+
+  return (
+    <div className="page">
+      <Breadcrumb items={["Commandes", order.reference]} />
+      <PageHeader
+        title={order.reference}
+        description={`${order.status} · ${order.date}`}
+      />
+      <div className="detail-grid">
+        <section className="panel">
+          <Section title="Informations commande">
+            <p>
+              Fournisseur <b>{order.supplier}</b>
+            </p>
+            <p>
+              Quantité commandée <b>24 sacs</b>
+            </p>
+            <p>
+              Montant <b>{order.amount}</b>
+            </p>
+          </Section>
+        </section>
+        <section className="panel">
+          <Section title="Flux de stock lié">
+            <p>
+              Entrée stock <b>À réception</b>
+            </p>
+            <p>
+              Dispatch vers bassin <b>À planifier</b>
+            </p>
+            <p>
+              Consommation <b>Non démarrée</b>
+            </p>
+          </Section>
+        </section>
+      </div>
+    </div>
+  );
+}
+
+function Section({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <>
+      <h2>{title}</h2>
+      <div className="detail-content">{children}</div>
+    </>
+  );
+}
