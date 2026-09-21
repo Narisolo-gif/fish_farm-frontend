@@ -72,7 +72,13 @@ docker compose down
 
 Le projet utilise un volume Docker permettant de travailler directement avec le code source local.
 
-Les modifications apportées aux fichiers du projet sont ainsi prises en compte par le serveur Next.js de développement.
+Le serveur Next.js est lancé avec Webpack et son polling activé. Ce choix est nécessaire avec Docker Desktop sous Windows, où les événements de fichiers du bind mount peuvent ne pas être transmis au conteneur. Les modifications apportées aux fichiers du projet sont ainsi prises en compte par le serveur Next.js de développement.
+
+Après une modification de `docker-compose.yml`, relancer avec reconstruction :
+
+```bash
+docker compose up --build
+```
 
 Pour consulter les logs :
 

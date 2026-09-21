@@ -3,7 +3,7 @@ export default function LoginPage() {
 		<div className="login-page">
 			<form className="login-card">
 				<div className="logo-box">Fish Farm Anosy</div>
-				<h1>Bon retour</h1>
+				<h1>Bonjour !</h1>
 				<p>Connectez-vous à votre espace de pilotage.</p>
 				<label>
 					Email
