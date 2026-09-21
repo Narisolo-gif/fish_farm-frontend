@@ -15,7 +15,7 @@ export default function NewUserPage() {
 				<Field label="Rôle" placeholder="Sélectionner un rôle" />
 				<Field label="Statut" placeholder="Actif" />
 				<div className="form-actions">
-					<Button variant="ghost" href="/users">
+					<Button variant="ghost" href="/admin/users">
 						Annuler
 					</Button>
 					<Button>Enregistrer</Button>

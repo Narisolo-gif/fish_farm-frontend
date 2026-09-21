@@ -23,12 +23,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <nav className="topnav" aria-label="Navigation principale">
           <Link href="/dashboard">Dashboard</Link>
           <Link href="/production">Production</Link>
-          <Link href="/stock">Stock</Link>
-          <Link href="/orders">Commandes</Link>
+          <Link href="/admin/stock">Stock</Link>
+          <Link href="/admin/orders">Commandes</Link>
         </nav>
         <div className="top-actions">
           <span className="notification">♧</span>
-          <Link href="/users">Admin</Link>
+          <Link href="/admin">Admin</Link>
         </div>
       </header>
       <div className="workspace">
@@ -44,14 +44,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               {module.label}
             </Link>
           ))}
-          <div className="sidebar-divider" />
-          <div className="sidebar-label">Administration</div>
-          <Link href="/users" className="side-link">
-            Utilisateurs
-          </Link>
-          <Link href="/orders" className="side-link">
-            Commandes
-          </Link>
         </aside>
         <main className="main-content">{children}</main>
       </div>

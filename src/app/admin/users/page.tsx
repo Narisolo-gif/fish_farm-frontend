@@ -10,7 +10,7 @@ export default function UsersPage() {
 				eyebrow="ADMINISTRATION"
 				title="Utilisateurs"
 				description="Gérez les accès à l'espace de pilotage."
-				action={<Button href="/users/new">+ Ajouter</Button>}
+				action={<Button href="/admin/users/new">+ Ajouter</Button>}
 			/>
 			<DataTable
 				headers={["Nom", "Email", "Rôle", "Statut"]}

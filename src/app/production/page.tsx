@@ -1,15 +1,22 @@
 import Link from "next/link";
 import { modules } from "@/lib/data";
-import { PageHeader } from "@/components/PageHeader";
+import productionImage from "../../../images/429661291_359176970324074_4739398200559559945_n.jpg";
 
 export default function ProductionPage() {
   return (
     <div className="page">
-      <PageHeader
-        eyebrow="PRODUCTION"
-        title="Accueil production"
-        description="Accédez rapidement à chaque module opérationnel."
-      />
+      <section
+        className="production-hero"
+        // style={{
+        //   backgroundImage: `linear-gradient(rgba(16, 35, 63, .72), rgba(7, 81, 143, .62)), url(${productionImage.src})`,
+        // }}
+      >
+        <div className="production-hero-content">
+          <p className="eyebrow">FISH FARM ANOSY · PRODUCTION</p>
+          <h1>Chaque bassin raconte une histoire.</h1>
+          <p>Suivez votre production, de la reproduction au grossissement.</p>
+        </div>
+      </section>
       <div className="production-list">
         {modules.map((module) => (
           <Link

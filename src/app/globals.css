@@ -422,10 +422,53 @@ button {
     color: var(--teal)
 }
 
-.production-list,
+.production-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 10px;
+}
+
 .quick-links {
     display: grid;
-    gap: 10px
+    gap: 10px;
+}
+
+.production-hero {
+    min-height: 305px;
+    display: grid;
+    place-items: center;
+    margin-bottom: 18px;
+    border-radius: 7px;
+    overflow: hidden;
+    position: relative;
+    background-color: var(--ink);
+    background-position: center;
+    background-size: cover
+}
+
+.production-hero-content {
+    position: relative;
+    z-index: 1;
+    max-width: 680px;
+    padding: 42px 24px;
+    color: white;
+    text-align: left;
+}
+
+.production-hero .eyebrow {
+    color: var(--lime)
+}
+
+.production-hero h1 {
+    font: 700 clamp(30px, 4vw, 54px)/1.05 'Space Grotesk';
+    letter-spacing: -1.5px;
+    margin: 12px 0 14px
+}
+
+.production-hero p:last-child {
+    margin: 0;
+    color: #e5f1f7;
+    font-size: 16px
 }
 
 .production-row,
@@ -925,6 +968,10 @@ tr:last-child td {
     .detail-grid,
     .card-grid,
     .quick-links {
+        grid-template-columns: 1fr
+    }
+
+    .production-list {
         grid-template-columns: 1fr
     }
 

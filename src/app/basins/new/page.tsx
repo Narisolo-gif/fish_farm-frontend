@@ -34,7 +34,7 @@ export default function NewBasinPage() {
                     </div>
                 </div>
                 <div className="form-actions">
-                    <Button variant="ghost" href="/production/grossissement/basins">
+                    <Button variant="ghost" href="/production/grossissement">
                         Annuler
                     </Button>
                     <Button>Enregistrer le bassin</Button>

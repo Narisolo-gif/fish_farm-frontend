@@ -11,7 +11,7 @@ export default function OrdersPage() {
                 eyebrow="APPROVISIONNEMENT"
                 title="Liste des commandes"
                 description="Commandes fournisseurs et flux entrants."
-                action={<Button href="/orders/new">+ Nouvelle commande</Button>}
+                action={<Button>+ Nouvelle commande</Button>}
             />
             <div className="filter-row">
                 <button>Filtre statut</button>
@@ -21,7 +21,7 @@ export default function OrdersPage() {
                 headers={["Référence", "Date", "Fournisseur", "Montant", "Statut"]}
                 rows={orders.map((order) => [
                     <Link
-                        href={`/orders/${order.reference}`}
+                        href={`/admin/orders/${order.reference}`}
                         className="table-link"
                         key={order.reference}
                     >
