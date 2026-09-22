@@ -775,6 +775,38 @@ tr:last-child td {
     border-color: var(--teal)
 }
 
+.password-field {
+    position: relative;
+    display: block
+}
+
+.password-field input {
+    width: 100%;
+    padding-right: 82px
+}
+
+.password-toggle {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    border: 0;
+    background: transparent;
+    color: var(--teal-dark);
+    font-size: 12px;
+    font-weight: 700;
+    padding: 4px;
+}
+
+.password-toggle:hover {
+    color: var(--teal)
+}
+
+.password-toggle:focus-visible {
+    outline: 2px solid var(--teal);
+    outline-offset: 2px
+}
+
 .form-card textarea {
     min-height: 100px;
     resize: vertical
@@ -879,6 +911,59 @@ tr:last-child td {
 .login-card h1 {
     font: 700 31px 'Space Grotesk';
     margin: 0 0 8px
+}
+
+.password-validation {
+    list-style: none;
+    display: grid;
+    gap: 5px;
+    padding: 0;
+    margin: -3px 0 20px;
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 500
+}
+
+.password-validation li {
+    display: flex;
+    align-items: center;
+    gap: 7px
+}
+
+.password-validation li span {
+    width: 12px;
+    color: var(--muted);
+    text-align: center
+}
+
+.password-validation .is-valid {
+    color: #27834d
+}
+
+.password-validation .is-valid span {
+    color: #27834d
+}
+
+.password-validation .is-invalid {
+    color: var(--red)
+}
+
+.password-validation .is-invalid span {
+    color: var(--red)
+}
+
+.form-error,
+.form-success {
+    font-size: 12px;
+    margin: -5px 0 16px
+}
+
+.form-error {
+    color: var(--red)
+}
+
+.form-success {
+    color: #27834d
 }
 
 .login-card>p {
