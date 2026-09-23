@@ -100,7 +100,113 @@ button {
 }
 
 .notification {
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    border: 1px solid #8fb6d2;
+    border-radius: 50%;
+    background: #fff;
+    color: var(--teal-dark);
     font-size: 20px
+}
+
+.search-box {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 220px;
+    padding: 7px 12px;
+    border: 1px solid #8fb6d2;
+    border-radius: 6px;
+    background: #fff;
+    color: var(--teal-dark);
+    font-size: 15px
+}
+
+.search-box input {
+    width: 100%;
+    min-width: 0;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: var(--ink);
+    font-size: 12px
+}
+
+.search-box input::placeholder {
+    color: var(--muted)
+}
+
+.profile-menu {
+    position: relative;
+    color: var(--ink);
+    font-size: 12px
+}
+
+.profile-menu summary {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 4px 10px 4px 4px;
+    border: 1px solid #8fb6d2;
+    border-radius: 20px;
+    background: #fff;
+    cursor: pointer;
+    list-style: none
+}
+
+.profile-menu summary::-webkit-details-marker {
+    display: none
+}
+
+.profile-avatar {
+    display: grid;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--teal-dark);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700
+}
+
+.profile-dropdown {
+    position: absolute;
+    z-index: 3;
+    top: calc(100% + 8px);
+    right: 0;
+    display: grid;
+    gap: 5px;
+    min-width: 170px;
+    padding: 10px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: #fff;
+    box-shadow: 0 10px 25px rgb(16 35 63 / 20%)
+}
+
+.profile-dropdown strong {
+    padding: 3px 6px 8px;
+    border-bottom: 1px solid var(--line);
+    color: var(--ink);
+    font-size: 12px
+}
+
+.profile-dropdown button {
+    padding: 8px 6px;
+    border: 0;
+    background: transparent;
+    color: var(--teal-dark);
+    text-align: left;
+    font-size: 12px;
+    font-weight: 700
+}
+
+.profile-dropdown button:hover {
+    background: #eaf3f8;
+    color: var(--teal)
 }
 
 .workspace {
@@ -991,6 +1097,10 @@ tr:last-child td {
         gap: 20px
     }
 
+    .search-box {
+        width: 180px
+    }
+
     .topnav {
         display: none
     }
@@ -1018,14 +1128,25 @@ tr:last-child td {
 
 @media(max-width:620px) {
     .topbar {
-        height: 62px
+        height: 62px;
+        padding: 0 12px;
+        gap: 10px
     }
 
     .brand {
         font-size: 15px
     }
 
-    .top-actions a {
+    .top-actions {
+        gap: 8px
+    }
+
+    .search-box {
+        width: 150px;
+        padding: 6px 9px
+    }
+
+    .profile-name {
         display: none
     }
 
