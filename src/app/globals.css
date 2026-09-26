@@ -336,6 +336,22 @@ button {
     color: var(--teal)
 }
 
+.button-danger {
+    border: 1px solid #e3b8b8;
+    background: #fff;
+    color: var(--red)
+}
+
+.button-danger:hover {
+    border-color: var(--red);
+    background: #fff5f5
+}
+
+.button:disabled {
+    cursor: not-allowed;
+    opacity: .6
+}
+
 .stats-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -745,6 +761,94 @@ button {
     overflow: auto
 }
 
+.list-content {
+    display: grid;
+    gap: 14px
+}
+
+.list-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px
+}
+
+.list-search {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    width: min(100%, 420px);
+    min-height: 42px;
+    padding: 0 12px;
+    border: 1px solid var(--line);
+    border-radius: 5px;
+    background: var(--surface);
+    color: var(--teal-dark)
+}
+
+.list-search:focus-within {
+    border-color: var(--teal);
+    box-shadow: 0 0 0 2px rgb(8 124 193 / 12%)
+}
+
+.list-search span {
+    font-size: 20px
+}
+
+.list-search input {
+    width: 100%;
+    min-width: 0;
+    padding: 0;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: var(--ink);
+    font: inherit;
+    font-size: 13px
+}
+
+.list-result-count,
+.list-pagination p,
+.pagination-controls span {
+    color: var(--muted);
+    font-size: 12px
+}
+
+.list-empty-state {
+    margin: 0;
+    padding: 24px;
+    border: 1px dashed var(--line);
+    border-radius: 5px;
+    color: var(--muted);
+    text-align: center;
+    font-size: 13px
+}
+
+.list-pagination,
+.pagination-controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px
+}
+
+.list-pagination {
+    padding: 2px 0
+}
+
+.list-pagination p {
+    margin: 0
+}
+
+.pagination-controls {
+    justify-content: flex-end
+}
+
+.pagination-button {
+    padding: 8px 11px;
+    font-size: 12px
+}
+
 table {
     width: 100%;
     border-collapse: collapse;
@@ -865,6 +969,7 @@ tr:last-child td {
 }
 
 .form-card input,
+.form-card select,
 .form-card textarea,
 .login-card input {
     border: 1px solid var(--line);
@@ -876,6 +981,7 @@ tr:last-child td {
 }
 
 .form-card input:focus,
+.form-card select:focus,
 .form-card textarea:focus,
 .login-card input:focus {
     border-color: var(--teal)
@@ -1221,6 +1327,20 @@ tr:last-child td {
         grid-template-columns: 1fr
     }
 
+    .list-toolbar,
+    .list-pagination {
+        align-items: stretch;
+        flex-direction: column
+    }
+
+    .list-search {
+        width: 100%
+    }
+
+    .pagination-controls {
+        justify-content: space-between
+    }
+
     .ai-alert {
         align-items: start;
         flex-wrap: wrap
@@ -1242,4 +1362,69 @@ tr:last-child td {
         min-height: calc(100vh - 62px);
         padding: 18px
     }
+}
+
+.user-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    min-width: 330px
+}
+
+.table-action {
+    padding: 7px 9px;
+    font-size: 11px
+}
+
+.user-dialog-backdrop {
+    position: fixed;
+    z-index: 10;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    padding: 16px;
+    background: rgb(16 35 63 / 48%)
+}
+
+.user-dialog {
+    width: min(540px, 100%);
+    max-height: calc(100vh - 32px);
+    overflow: auto;
+    padding: 26px;
+    border: 1px solid var(--line);
+    border-radius: 7px;
+    background: var(--surface);
+    box-shadow: 0 18px 48px rgb(16 35 63 / 24%)
+}
+
+.user-dialog h2 {
+    margin: 0 0 20px;
+    font: 600 21px 'Space Grotesk'
+}
+
+.user-dialog label {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    margin-bottom: 15px;
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 700
+}
+
+.user-dialog input,
+.user-dialog select {
+    width: 100%;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 12px;
+    background: var(--surface);
+    color: var(--ink);
+    font: inherit
+}
+
+.user-dialog input:focus,
+.user-dialog select:focus {
+    border-color: var(--teal);
+    outline: none
 }
