@@ -31,7 +31,7 @@ function Sidebar({ isAdmin, onLogout }: SidebarProps) {
   const navigation = isAdmin ? adminNavigation : productionNavigation;
 
   return (
-    <aside className="sidebar" style={{ display: "flex", flexDirection: "column" }}>
+    <aside className="sidebar">
       <div className="sidebar-label">{isAdmin ? "Admin" : "Production"}</div>
       <nav aria-label={`Navigation ${isAdmin ? "Admin" : "Production"}`}>
         {navigation.map((item) => (

@@ -1,6 +1,6 @@
-export function DataTable({ headers, rows }: { headers: string[]; rows: (string | React.ReactNode)[][] }) {
+export function DataTable({ headers, rows, className = "" }: { headers: string[]; rows: (string | React.ReactNode)[][]; className?: string }) {
   return (
-    <div className="table-wrap">
+    <div className={`table-wrap ${className}`.trim()}>
       <table>
         <thead>
           <tr>
