@@ -277,6 +277,140 @@ button {
     margin: auto
 }
 
+.lot-detail-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 22px
+}
+
+.lot-detail-title {
+    display: flex;
+    align-items: baseline;
+    gap: 14px
+}
+
+.lot-detail-title h1 {
+    margin: 0;
+    font: 700 28px/1.2 'Space Grotesk'
+}
+
+.lot-back-link {
+    color: var(--muted);
+    font-size: 13px
+}
+
+.lot-back-link:hover {
+    color: var(--teal-dark)
+}
+
+.lot-status {
+    font-size: 12px
+}
+
+.lot-tabs {
+    display: flex;
+    gap: 4px;
+    overflow-x: auto;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 18px
+}
+
+.lot-tab {
+    flex: 0 0 auto;
+    padding: 9px 14px;
+    border: 1px solid var(--line);
+    border-bottom: 0;
+    border-radius: 5px 5px 0 0;
+    background: transparent;
+    color: var(--muted);
+    font-size: 13px
+}
+
+.lot-tab.is-active {
+    background: var(--surface);
+    color: var(--teal-dark);
+    font-weight: 700
+}
+
+.lot-tab:disabled {
+    cursor: not-allowed;
+    opacity: .55
+}
+
+.lot-overview {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+    margin-bottom: 24px
+}
+
+.lot-info-panel {
+    min-width: 0;
+    padding: 15px 16px;
+    border: 1px dashed var(--line);
+    border-radius: 6px;
+    background: rgb(255 255 255 / 55%)
+}
+
+.lot-info-panel h2 {
+    margin: 0 0 10px;
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-transform: uppercase
+}
+
+.lot-info-panel p {
+    margin: 0;
+    color: var(--ink);
+    font-size: 13px
+}
+
+.lot-history table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left
+}
+
+.lot-history th,
+.lot-history td {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--line);
+    font-size: 12px
+}
+
+.lot-history th {
+    color: var(--muted);
+    font-size: 10px;
+    letter-spacing: .06em;
+    text-transform: uppercase
+}
+
+.lot-history-empty {
+    color: var(--muted);
+    text-align: center
+}
+
+@media (max-width: 600px) {
+    .lot-detail-header {
+        align-items: flex-start;
+        flex-direction: column
+    }
+
+    .lot-detail-title {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 5px
+    }
+
+    .lot-overview {
+        grid-template-columns: 1fr
+    }
+}
+
 .page-header {
     display: flex;
     justify-content: space-between;
@@ -365,6 +499,10 @@ button {
     grid-template-columns: repeat(3, 1fr)
 }
 
+.stats-grid.two {
+    grid-template-columns: repeat(2, 1fr)
+}
+
 .stat-card {
     background: var(--surface);
     border: 1px solid var(--line);
@@ -396,21 +534,25 @@ button {
     gap: 18px
 }
 
-.reproduction-page .page-header {
+.reproduction-page .page-header,
+.ecloserie-page .page-header {
     margin-bottom: 16px
 }
 
-.reproduction-page .page-header h1 {
+.reproduction-page .page-header h1,
+.ecloserie-page .page-header h1 {
     font-size: 28px;
     letter-spacing: 0
 }
 
-.reproduction-page .page-description {
+.reproduction-page .page-description,
+.ecloserie-page .page-description {
     margin-top: 5px;
     font-size: 13px
 }
 
-.reproduction-dashboard {
+.reproduction-dashboard,
+.ecloserie-dashboard {
     display: grid;
     gap: 12px
 }
@@ -440,31 +582,38 @@ button {
     color: var(--ink)
 }
 
-.reproduction-section {
+.reproduction-section,
+.ecloserie-section {
     min-width: 0;
     padding: 0 0 12px;
     border-bottom: 1px solid var(--line)
 }
 
-.reproduction-section .section-heading {
+.reproduction-section .section-heading,
+.ecloserie-section .section-heading {
     margin-bottom: 8px
 }
 
-.reproduction-section .section-heading h2 {
+.reproduction-section .section-heading h2,
+.ecloserie-section .section-heading h2 {
     font-size: 15px
 }
 
-.reproduction-table table {
+.reproduction-table table,
+.ecloserie-table table {
     min-width: 610px
 }
 
 .reproduction-table th,
-.reproduction-table td {
+.reproduction-table td,
+.ecloserie-table th,
+.ecloserie-table td {
     padding: 9px 12px;
     font-size: 12px
 }
 
-.reproduction-data-note {
+.reproduction-data-note,
+.ecloserie-data-note {
     margin: 0;
     color: var(--muted);
     font-size: 11px
@@ -507,7 +656,8 @@ button {
     font: 10px 'DM Sans', sans-serif
 }
 
-.reproduction-actions {
+.reproduction-actions,
+.ecloserie-actions {
     display: flex;
     flex-wrap: wrap;
     gap: 10px
@@ -1158,6 +1308,174 @@ tr:last-child td {
     margin-top: 20px
 }
 
+.treatment-meta {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+    margin: 0 0 22px;
+    padding: 15px 0;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line)
+}
+
+.treatment-meta dt {
+    margin-bottom: 5px;
+    color: var(--muted);
+    font-size: 12px
+}
+
+.treatment-meta dd {
+    margin: 0;
+    color: var(--ink);
+    font-size: 14px;
+    font-weight: 600
+}
+
+.treatment-feature-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 26px
+}
+
+.treatment-feature-button {
+    min-height: 38px;
+    padding: 8px 14px;
+    border: 1px solid var(--line);
+    border-radius: 5px;
+    background: var(--surface);
+    color: var(--ink);
+    font-size: 13px;
+    font-weight: 600
+}
+
+.treatment-feature-button.is-active {
+    border-color: var(--teal-dark);
+    background: var(--teal-dark);
+    color: #fff
+}
+
+.treatment-feature-button:disabled {
+    cursor: not-allowed;
+    opacity: .5
+}
+
+.treatment-mortality {
+    display: grid;
+    gap: 18px
+}
+
+.treatment-mortality-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px
+}
+
+.treatment-mortality-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px
+}
+
+.treatment-mortality-heading h2 {
+    margin: 0;
+    font: 600 18px 'Space Grotesk'
+}
+
+.treatment-record-form {
+    max-width: none
+}
+
+.treatment-record-form h3 {
+    margin: 0 0 18px;
+    font: 600 16px 'Space Grotesk'
+}
+
+.treatment-observation-field {
+    grid-column: 1 / -1
+}
+
+.treatment-journal-table table {
+    width: 100%;
+    min-width: 620px
+}
+
+.treatment-section-loading {
+    margin: 0;
+    padding: 20px 0;
+    color: var(--muted);
+    font-size: 13px
+}
+
+.treatment-closure {
+    display: grid;
+    gap: 14px
+}
+
+.treatment-closure h2 {
+    margin: 0;
+    font: 600 18px 'Space Grotesk'
+}
+
+.treatment-closure .treatment-journal-table table {
+    min-width: 760px
+}
+
+.treatment-confirmation-backdrop {
+    position: fixed;
+    z-index: 10;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    padding: 16px;
+    background: rgb(16 35 63 / 48%)
+}
+
+.treatment-confirmation-dialog {
+    width: min(480px, 100%);
+    padding: 24px;
+    border: 1px solid var(--line);
+    border-radius: 7px;
+    background: var(--surface);
+    box-shadow: 0 18px 48px rgb(16 35 63 / 24%)
+}
+
+.treatment-confirmation-dialog h3 {
+    margin: 0 0 12px;
+    font: 600 19px 'Space Grotesk'
+}
+
+.treatment-confirmation-dialog p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.5
+}
+
+.treatment-confirmation-dialog .form-actions {
+    margin-top: 20px
+}
+
+@media (max-width: 600px) {
+    .treatment-meta {
+        grid-template-columns: 1fr;
+        gap: 12px
+    }
+
+    .treatment-mortality-stats {
+        grid-template-columns: 1fr
+    }
+
+    .treatment-mortality-heading {
+        align-items: flex-start;
+        flex-direction: column
+    }
+
+    .treatment-observation-field {
+        grid-column: auto
+    }
+}
+
 .subsection {
     border-top: 1px solid var(--line);
     padding-top: 20px
@@ -1466,7 +1784,8 @@ tr:last-child td {
         flex-direction: column
     }
 
-    .reproduction-actions .button {
+    .reproduction-actions .button,
+    .ecloserie-actions .button {
         flex: 1 1 160px
     }
 

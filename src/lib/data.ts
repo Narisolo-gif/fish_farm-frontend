@@ -14,6 +14,14 @@ export const lots = [
   { name: "Bassin C — Lot 09", state: "Clôturé", count: "—", weight: "—" },
 ];
 
+export const demoTreatmentLots = [
+  { id: "lot-12", reference: "Lot 12", basin: "Bassin A" },
+  { id: "lot-13", reference: "Lot 13", basin: "Bassin B" },
+  { id: "lot-09", reference: "Lot 09", basin: "Bassin C" },
+];
+
+export const demoTreatmentBasins = ["Bassin A", "Bassin B", "Bassin C"];
+
 export const orders = [
   { reference: "CMD-2025-001", date: "12 juin 2025", supplier: "Aqua Nutrition", amount: "1 240 €", status: "En cours" },
   { reference: "CMD-2025-002", date: "08 juin 2025", supplier: "Pisciculture Pro", amount: "860 €", status: "Livrée" },
