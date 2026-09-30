@@ -1299,6 +1299,33 @@ tr:last-child td {
     gap: 0 16px
 }
 
+.stock-hapas-section {
+    min-inline-size: 0;
+    margin: 0 0 22px;
+    padding: 12px 18px 0;
+    border: 1px solid var(--line);
+    border-radius: 5px
+}
+
+.stock-hapas-section legend {
+    padding: 0 8px;
+    color: var(--ink);
+    font-size: 14px;
+    font-weight: 700
+}
+
+.stock-hapas-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0 16px
+}
+
+.stock-total-field input[readonly] {
+    color: var(--ink);
+    font-weight: 700;
+    cursor: default
+}
+
 .form-actions {
     display: flex;
     justify-content: flex-end;
@@ -1308,7 +1335,8 @@ tr:last-child td {
     margin-top: 20px
 }
 
-.treatment-meta {
+.treatment-meta,
+.stock-meta {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 18px;
@@ -1318,27 +1346,31 @@ tr:last-child td {
     border-bottom: 1px solid var(--line)
 }
 
-.treatment-meta dt {
+.treatment-meta dt,
+.stock-meta dt {
     margin-bottom: 5px;
     color: var(--muted);
     font-size: 12px
 }
 
-.treatment-meta dd {
+.treatment-meta dd,
+.stock-meta dd {
     margin: 0;
     color: var(--ink);
     font-size: 14px;
     font-weight: 600
 }
 
-.treatment-feature-nav {
+.treatment-feature-nav,
+.stock-feature-nav {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
     margin-bottom: 26px
 }
 
-.treatment-feature-button {
+.treatment-feature-button,
+.stock-feature-button {
     min-height: 38px;
     padding: 8px 14px;
     border: 1px solid var(--line);
@@ -1349,13 +1381,15 @@ tr:last-child td {
     font-weight: 600
 }
 
-.treatment-feature-button.is-active {
+.treatment-feature-button.is-active,
+.stock-feature-button.is-active {
     border-color: var(--teal-dark);
     background: var(--teal-dark);
     color: #fff
 }
 
-.treatment-feature-button:disabled {
+.treatment-feature-button:disabled,
+.stock-feature-button:disabled {
     cursor: not-allowed;
     opacity: .5
 }
@@ -1407,21 +1441,25 @@ tr:last-child td {
     font-size: 13px
 }
 
-.treatment-closure {
+.treatment-closure,
+.stock-closure {
     display: grid;
     gap: 14px
 }
 
-.treatment-closure h2 {
+.treatment-closure h2,
+.stock-closure h2 {
     margin: 0;
     font: 600 18px 'Space Grotesk'
 }
 
-.treatment-closure .treatment-journal-table table {
+.treatment-closure .treatment-journal-table table,
+.stock-closure .treatment-journal-table table {
     min-width: 760px
 }
 
-.treatment-confirmation-backdrop {
+.treatment-confirmation-backdrop,
+.stock-confirmation-backdrop {
     position: fixed;
     z-index: 10;
     inset: 0;
@@ -1431,7 +1469,8 @@ tr:last-child td {
     background: rgb(16 35 63 / 48%)
 }
 
-.treatment-confirmation-dialog {
+.treatment-confirmation-dialog,
+.stock-confirmation-dialog {
     width: min(480px, 100%);
     padding: 24px;
     border: 1px solid var(--line);
@@ -1440,24 +1479,28 @@ tr:last-child td {
     box-shadow: 0 18px 48px rgb(16 35 63 / 24%)
 }
 
-.treatment-confirmation-dialog h3 {
+.treatment-confirmation-dialog h3,
+.stock-confirmation-dialog h3 {
     margin: 0 0 12px;
     font: 600 19px 'Space Grotesk'
 }
 
-.treatment-confirmation-dialog p {
+.treatment-confirmation-dialog p,
+.stock-confirmation-dialog p {
     margin: 0;
     color: var(--muted);
     font-size: 14px;
     line-height: 1.5
 }
 
-.treatment-confirmation-dialog .form-actions {
+.treatment-confirmation-dialog .form-actions,
+.stock-confirmation-dialog .form-actions {
     margin-top: 20px
 }
 
 @media (max-width: 600px) {
-    .treatment-meta {
+    .treatment-meta,
+    .stock-meta {
         grid-template-columns: 1fr;
         gap: 12px
     }
@@ -1762,6 +1805,10 @@ tr:last-child td {
 
     .form-grid {
         grid-template-columns: 1fr
+    }
+
+    .stock-hapas-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr))
     }
 
     .list-toolbar,
