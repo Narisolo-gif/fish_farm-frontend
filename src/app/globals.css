@@ -695,6 +695,222 @@ button {
     overflow: hidden
 }
 
+.grossissement-dashboard {
+    display: grid;
+    gap: 16px
+}
+
+.grossissement-dashboard-overview {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: start;
+    gap: 14px
+}
+
+.grossissement-dashboard-stats {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    margin: 0
+}
+
+.grossissement-dashboard-chart-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px
+}
+
+.grossissement-dashboard-distribution {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(230px, 1fr);
+    gap: 14px
+}
+
+.grossissement-chart-panel {
+    min-width: 0;
+    padding: 18px
+}
+
+.grossissement-chart-panel .section-heading {
+    margin-bottom: 12px
+}
+
+.grossissement-chart {
+    display: block;
+    width: 100%;
+    height: 142px
+}
+
+.grossissement-distribution-chart {
+    display: block;
+    width: 100%;
+    height: 190px
+}
+
+.grossissement-chart-gridlines line {
+    stroke: var(--line);
+    stroke-width: 1
+}
+
+.grossissement-chart-line,
+.grossissement-distribution-line {
+    fill: none;
+    stroke: var(--teal);
+    stroke-width: 3;
+    vector-effect: non-scaling-stroke
+}
+
+.grossissement-chart-line.is-secondary {
+    stroke: var(--amber)
+}
+
+.grossissement-chart-bar {
+    fill: var(--teal)
+}
+
+.grossissement-chart-bar.is-secondary {
+    fill: var(--lime)
+}
+
+.grossissement-chart text,
+.grossissement-distribution-chart text {
+    fill: var(--muted);
+    font: 10px 'DM Sans', sans-serif
+}
+
+.grossissement-sexage {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    min-height: 190px
+}
+
+.grossissement-sexage svg {
+    width: min(140px, 45%);
+    flex: 0 1 140px
+}
+
+.grossissement-sexage-ring {
+    fill: none;
+    stroke: var(--line);
+    stroke-width: 16
+}
+
+.grossissement-sexage text {
+    fill: var(--muted);
+    font: 600 20px 'Space Grotesk', sans-serif
+}
+
+.grossissement-sexage-legend {
+    display: grid;
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+    color: var(--muted);
+    font-size: 12px;
+    list-style: none
+}
+
+.grossissement-sexage-legend li {
+    display: flex;
+    align-items: center;
+    gap: 7px
+}
+
+.grossissement-legend-swatch {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--teal)
+}
+
+.grossissement-legend-swatch.is-secondary {
+    background: var(--amber)
+}
+
+.grossissement-dashboard-note,
+.discussion-widget-note {
+    margin: 0;
+    color: var(--muted);
+    font-size: 12px
+}
+
+.discussion-widget {
+    display: grid;
+    gap: 12px
+}
+
+.discussion-widget-heading .section-heading {
+    margin-bottom: 5px
+}
+
+.discussion-widget-heading > p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 13px
+}
+
+.discussion-widget-messages {
+    display: grid;
+    align-content: start;
+    gap: 10px;
+    min-height: 150px;
+    max-height: 300px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 12px;
+    border: 1px solid var(--line);
+    border-radius: 5px;
+    background: var(--paper)
+}
+
+.discussion-widget-empty {
+    align-self: center;
+    justify-self: center;
+    margin: 0;
+    color: var(--muted);
+    font-size: 13px;
+    text-align: center
+}
+
+.discussion-widget-message {
+    justify-self: end;
+    width: min(100%, 520px);
+    padding: 10px 12px;
+    border: 1px solid var(--line);
+    border-radius: 5px;
+    background: var(--surface)
+}
+
+.discussion-widget-message span {
+    color: var(--teal-dark);
+    font-size: 11px;
+    font-weight: 700
+}
+
+.discussion-widget-message p {
+    margin: 4px 0 0;
+    color: var(--ink);
+    font-size: 13px;
+    overflow-wrap: anywhere
+}
+
+.discussion-widget-form {
+    display: flex;
+    align-items: end;
+    gap: 10px
+}
+
+.discussion-widget-form textarea {
+    flex: 1;
+    min-width: 0;
+    resize: vertical;
+    padding: 10px 12px;
+    border: 1px solid var(--line);
+    border-radius: 5px;
+    background: var(--surface);
+    color: var(--ink)
+}
+
 .chart-line {
     position: absolute;
     width: 75%;
@@ -910,6 +1126,23 @@ button {
     color: var(--teal);
     font-weight: 600;
     font-size: 13px
+}
+
+.grossissement-action {
+    flex: 1 1 160px;
+    justify-content: space-between;
+    min-height: 48px;
+    color: var(--ink)
+}
+
+.grossissement-action:disabled {
+    opacity: 1
+}
+
+.grossissement-action-arrow {
+    color: var(--teal);
+    font-size: 16px;
+    line-height: 1
 }
 
 .card-grid {
@@ -1224,6 +1457,68 @@ tr:last-child td {
 
 .form-card.wide {
     max-width: 840px
+}
+
+.environment-parameters-form {
+    width: 100%;
+    margin: 16px 0
+}
+
+.environment-measurement-groups {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 12px;
+    margin: 4px 0 16px
+}
+
+.environment-measurement-group {
+    min-width: 0;
+    margin: 0;
+    padding: 10px 12px 12px;
+    border: 1px solid var(--line);
+    border-radius: 5px
+}
+
+.environment-measurement-group legend {
+    padding: 0 6px;
+    color: var(--ink);
+    font-size: 13px;
+    font-weight: 700
+}
+
+.environment-checkbox-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(44px, 1fr));
+    gap: 8px 5px
+}
+
+.form-card .environment-checkbox-option {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    gap: 5px;
+    min-width: 0;
+    margin: 0;
+    color: var(--ink);
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer
+}
+
+.environment-color-placeholder {
+    width: 18px;
+    height: 10px;
+    border: 1px solid var(--line);
+    border-radius: 2px;
+    background: var(--surface)
+}
+
+.form-card .environment-checkbox-option input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    padding: 0;
+    accent-color: var(--teal)
 }
 
 .form-card label,
@@ -1703,6 +1998,18 @@ tr:last-child td {
         grid-template-columns: repeat(3, 1fr)
     }
 
+    .grossissement-dashboard-chart-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr))
+    }
+
+    .grossissement-dashboard-overview {
+        grid-template-columns: 1fr
+    }
+
+    .grossissement-dashboard-overview > .button {
+        justify-self: start
+    }
+
     .stats-grid {
         grid-template-columns: repeat(2, 1fr)
     }
@@ -1783,6 +2090,24 @@ tr:last-child td {
     .module-grid {
         grid-template-columns: repeat(2, 1fr);
         margin-top: 34px
+    }
+
+    .grossissement-dashboard-chart-grid,
+    .grossissement-dashboard-distribution {
+        grid-template-columns: 1fr
+    }
+
+    .grossissement-dashboard-stats {
+        grid-template-columns: 1fr
+    }
+
+    .discussion-widget-form {
+        align-items: stretch;
+        flex-direction: column
+    }
+
+    .discussion-widget-form .button {
+        align-self: flex-end
     }
 
     .module-card {

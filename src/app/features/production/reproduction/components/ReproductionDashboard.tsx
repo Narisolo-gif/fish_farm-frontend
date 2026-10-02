@@ -126,7 +126,7 @@ export function ReproductionDashboard() {
 			</section>
 
 			<nav className="reproduction-actions" aria-label="Actions de reproduction">
-				<Button variant="ghost" href="#environment">+ Paramètre environnemental</Button>
+				<Button variant="ghost" href="/environnement/new">+ Paramètre environnemental</Button>
 				<Button variant="ghost" href="/bassins/new">Configurer bassin / hapa</Button>
 				<button className="button button-ghost" type="button" disabled title="Le formulaire de lot n'est pas encore disponible.">
 					+ Lot de reproduction

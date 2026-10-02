@@ -15,6 +15,7 @@ const adminNavigation = [
   { label: "Provendes", href: "/admin/stock", icon: "▣" },
   { label: "Commandes", href: "/admin/orders", icon: "▤" },
   { label: "Tableau de bord", href: "/admin", icon: "⌂" },
+  { label: "Bassins et hapas", href: "/bassins", icon: "⌂" },
   { label: "Alertes", href: "/admin/alerts", icon: "!" },
 ];
 

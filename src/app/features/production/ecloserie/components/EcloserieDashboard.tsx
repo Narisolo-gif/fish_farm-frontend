@@ -27,7 +27,7 @@ export function EcloserieDashboard() {
 			</section>
 
 			<nav className="ecloserie-actions" aria-label="Actions d'écloserie">
-				<Button variant="ghost" href="#environment">+ Ajouter un paramètre environnemental</Button>
+				<Button variant="ghost" href="/environnement/new">+ Ajouter un paramètre environnemental</Button>
 				<Button variant="ghost" href="/bassins/new">Configurer bassin / hapa</Button>
 				<button
 					className="button button-primary"
