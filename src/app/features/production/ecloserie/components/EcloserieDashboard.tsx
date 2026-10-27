@@ -1,8 +1,15 @@
+"use client";
+
 import { DataTable } from "@/components/DataTable";
 import { Button, SectionHeading, StatCard } from "@/components/ui";
 import { EnvironmentalParametersTable } from "@/app/features/production/shared/environnement/components/EnvironmentalParametersTable";
+import { isEclosionRecord } from "@/app/features/production/ecloserie/data/ecloserieData";
+import { productionStorageKeys, useLocalRecords } from "@/app/features/production/shared/data/localProductionRecords";
 
 export function EcloserieDashboard() {
+	const eclosionsSnapshot = useLocalRecords(productionStorageKeys.eclosions, isEclosionRecord);
+	const eclosions = eclosionsSnapshot.records;
+
 	return (
 		<div className="ecloserie-dashboard">
 			<section className="stats-grid two" aria-label="Indicateurs d'écloserie">
@@ -13,30 +20,39 @@ export function EcloserieDashboard() {
 			<section className="ecloserie-section" id="environment">
 				<SectionHeading title="Paramètres environnementaux" />
 				<EnvironmentalParametersTable />
-				<p className="ecloserie-data-note">Les relevés environnementaux seront affichés après leur connexion à l'API.</p>
+				<p className="ecloserie-data-note">Les relevés environnementaux seront affichés après leur connexion à l&apos;API.</p>
 			</section>
 
 			<section className="ecloserie-section" id="hatching-history">
 				<SectionHeading title="Historique des éclosions" />
-				<DataTable
-					className="ecloserie-table"
-					headers={["Référence", "Référence ponte", "Date de ponte", "Date d'éclosion", "Quantité d'alevins obtenus"]}
-					rows={[]}
-				/>
-				<p className="list-empty-state">Aucune éclosion enregistrée pour le moment.</p>
+				{eclosionsSnapshot.error ? (
+					<p className="form-error" role="alert">{eclosionsSnapshot.error}</p>
+				) : eclosions.length > 0 ? (
+					<DataTable
+						className="ecloserie-table"
+						headers={["Référence", "Référence ponte", "Date d’éclosion", "Quantité d’alevins obtenus", "Quantité d’œufs éclos", "Observation"]}
+						rows={eclosions.map((eclosion) => [
+							<strong key={`${eclosion.reference}-reference`}>{eclosion.reference}</strong>,
+							eclosion.ponteReference,
+							new Date(`${eclosion.hatchingDate}T00:00:00`).toLocaleDateString("fr-FR"),
+							eclosion.fryQuantity.toLocaleString("fr-FR"),
+							eclosion.hatchedEggQuantity?.toLocaleString("fr-FR") ?? "—",
+							eclosion.observation || "—",
+						])}
+					/>
+				) : (
+					<p className="list-empty-state">
+						{eclosionsSnapshot.isReady ? "Aucune éclosion enregistrée pour le moment." : "Chargement de l'historique…"}
+					</p>
+				)}
 			</section>
 
 			<nav className="ecloserie-actions" aria-label="Actions d'écloserie">
 				<Button variant="ghost" href="/environnement/new">+ Ajouter un paramètre environnemental</Button>
 				<Button variant="ghost" href="/bassins/new">Configurer bassin / hapa</Button>
-				<button
-					className="button button-primary"
-					type="button"
-					disabled
-					title="Le formulaire d'éclosion n'est pas encore disponible."
-				>
+				<Button variant="primary" href="/production/ecloserie/nouveau">
 					Enregistrer une éclosion
-				</button>
+				</Button>
 			</nav>
 		</div>
 	);

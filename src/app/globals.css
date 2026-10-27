@@ -1459,6 +1459,16 @@ tr:last-child td {
     max-width: 840px
 }
 
+.reproduction-entry-form {
+    width: 100%;
+    margin: 0
+}
+
+.reproduction-entry-form h2 {
+    margin: 0 0 20px;
+    font: 600 17px 'Space Grotesk'
+}
+
 .environment-parameters-form {
     width: 100%;
     margin: 16px 0
@@ -1830,6 +1840,11 @@ tr:last-child td {
     display: flex;
     gap: 9px;
     align-items: center
+}
+
+.happa-list {
+    display: grid;
+    gap: 10px
 }
 
 .happa-input span {

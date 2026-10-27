@@ -15,7 +15,7 @@ const adminNavigation = [
   { label: "Provendes", href: "/admin/stock", icon: "▣" },
   { label: "Commandes", href: "/admin/orders", icon: "▤" },
   { label: "Tableau de bord", href: "/admin", icon: "⌂" },
-  { label: "Bassins et hapas", href: "/bassins", icon: "⌂" },
+  { label: "Bassins", href: "/bassins", icon: "⌂" },
   { label: "Alertes", href: "/admin/alerts", icon: "!" },
 ];
 
@@ -114,6 +114,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <nav className="topnav" aria-label="Navigation principale">
           <Link href="/dashboard">Dashboard</Link>
           <Link href="/production">Production</Link>
+          <Link href="/bassins">Bassins</Link>
           <Link href="/admin/stock">Provenderies</Link>
         </nav>
         <label className="search-box">
