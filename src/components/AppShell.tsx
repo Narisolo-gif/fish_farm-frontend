@@ -115,7 +115,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <Link href="/dashboard">Dashboard</Link>
           <Link href="/production">Production</Link>
           <Link href="/bassins">Bassins</Link>
-          <Link href="/admin/stock">Provenderies</Link>
+          <Link href="/provende">Provenderies</Link>
         </nav>
         <label className="search-box">
           <span aria-hidden="true">⌕</span>

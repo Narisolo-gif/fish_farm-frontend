@@ -8,7 +8,7 @@ export default function NewTraitementPage() {
 			<PageHeader
 				eyebrow="Production"
 				title="Ouvrir un traitement"
-				description="Associez un lot à un bassin et indiquez la date de début."
+				description="Associez un lot éligible à un bassin actif de traitement."
 			/>
 			<TraitementForm />
 		</div>
