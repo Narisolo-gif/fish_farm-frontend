@@ -1,58 +1,44 @@
 "use client";
 
-import { type FormEvent, useEffect, useRef, useState } from "react";
-import type { ReproductionLot, ReproductionSpecies } from "@/app/features/production/reproduction/data/reproductionData";
+import { type FormEvent, useState } from "react";
+import type { EnvironmentalBasin } from "@/app/features/production/shared/environnement/types/environment.types";
+import type { ReproductionInput } from "@/app/features/production/reproduction/types/reproduction.types";
 
 export function LotReproductionForm({
 	basins,
-	referenceSequence,
+	isSubmitting,
+	error,
 	onCancel,
 	onSubmit,
 }: {
-	basins: string[];
-	referenceSequence: number;
+	basins: Pick<EnvironmentalBasin, "id" | "reference">[];
+	isSubmitting: boolean;
+	error: string;
 	onCancel: () => void;
-	onSubmit: (lot: ReproductionLot) => void;
+	onSubmit: (lot: ReproductionInput) => void;
 }) {
 	const [basin, setBasin] = useState("");
-	const [species, setSpecies] = useState<ReproductionSpecies | "">("");
+	const [species, setSpecies] = useState<"CARPE" | "TILAPIA" | "">("");
 	const [maleQuantity, setMaleQuantity] = useState("");
 	const [femaleQuantity, setFemaleQuantity] = useState("");
 	const [observation, setObservation] = useState("");
-	const addedAtInput = useRef<HTMLInputElement>(null);
-	const referenceInput = useRef<HTMLInputElement>(null);
-
-	useEffect(() => {
-		if (addedAtInput.current) {
-			addedAtInput.current.value = getLocalDateTimeValue();
-		}
-		if (referenceInput.current) {
-			referenceInput.current.value = getLotReference(referenceSequence);
-		}
-	}, [referenceSequence]);
+	const [reference, setReference] = useState("");
+	const [addedAt, setAddedAt] = useState(getLocalDateValue());
 
 	function handleSubmit(event: FormEvent<HTMLFormElement>) {
 		event.preventDefault();
-		const formData = new FormData(event.currentTarget);
-		const addedAt = formData.get("addedAt");
-		const reference = formData.get("reference");
-		if (
-			!species ||
-			typeof addedAt !== "string" || !addedAt ||
-			typeof reference !== "string" || !reference
-		) {
+		if (!species) {
 			return;
 		}
 
 		onSubmit({
-			basin,
-			reference,
-			addedAt,
-			species,
-			maleQuantity: Number(maleQuantity),
-			femaleQuantity: Number(femaleQuantity),
+			bassin: Number(basin),
+			reference: reference.trim(),
+			date_ajout: addedAt,
+			espece: species,
+			quantite_male: Number(maleQuantity),
+			quantite_femelle: Number(femaleQuantity),
 			observation: observation.trim(),
-			status: "Actif",
 		});
 	}
 
@@ -62,97 +48,98 @@ export function LotReproductionForm({
 			<div className="form-grid">
 				<label>
 					Bassin
-					<select value={basin} onChange={(event) => setBasin(event.target.value)} required>
+					<select value={basin} onChange={(event) => setBasin(event.target.value)} required disabled={isSubmitting}>
 						<option value="" disabled>Sélectionner un bassin</option>
 						{basins.map((availableBasin) => (
-							<option key={availableBasin} value={availableBasin}>{availableBasin}</option>
+							<option key={availableBasin.id} value={availableBasin.id}>
+								{availableBasin.reference}
+							</option>
 						))}
 					</select>
 				</label>
 				<label>
-					Référence du lot
-					<input type="text" name="reference" ref={referenceInput} readOnly required />
+					Référence de la reproduction
+					<input
+						type="text"
+						value={reference}
+						onChange={(event) => setReference(event.target.value)}
+						maxLength={100}
+						required
+						disabled={isSubmitting}
+					/>
 				</label>
 				<label>
-					Date de l&apos;ajout
+					Date d&apos;ajout
 					<input
 						type="date"
-						name="addedAt"
-						ref={addedAtInput}
+						value={addedAt}
+						max={getLocalDateValue()}
+						onChange={(event) => setAddedAt(event.target.value)}
 						required
+						disabled={isSubmitting}
 					/>
 				</label>
 				<label>
 					Espèce
 					<select
 						value={species}
-						onChange={(event) => setSpecies(event.target.value as ReproductionSpecies | "")}
+						onChange={(event) => setSpecies(event.target.value as "CARPE" | "TILAPIA" | "")}
 						required
+						disabled={isSubmitting}
 					>
 						<option value="" disabled>Sélectionner une espèce</option>
-						<option value="Carpe">Carpe</option>
-						<option value="Tilapia">Tilapia</option>
+						<option value="CARPE">Carpe</option>
+						<option value="TILAPIA">Tilapia</option>
 					</select>
 				</label>
 				<label>
 					Quantité de mâles
 					<input
 						type="number"
-						name="quantite_male"
-						min="0"
+						min="1"
 						step="1"
 						value={maleQuantity}
 						onChange={(event) => setMaleQuantity(event.target.value)}
 						required
+						disabled={isSubmitting}
 					/>
 				</label>
 				<label>
 					Quantité de femelles
 					<input
 						type="number"
-						name="quantite_femelle"
-						min="0"
+						min="1"
 						step="1"
 						value={femaleQuantity}
 						onChange={(event) => setFemaleQuantity(event.target.value)}
 						required
+						disabled={isSubmitting}
 					/>
 				</label>
 			</div>
 			<label>
 				Observation
 				<textarea
-					name="observation"
 					value={observation}
 					onChange={(event) => setObservation(event.target.value)}
 					placeholder="Ajouter une observation (facultatif)"
+					disabled={isSubmitting}
 				/>
 			</label>
+			{error && <p className="form-error" role="alert">{error}</p>}
 			<div className="form-actions">
-				<button className="button button-ghost" type="button" onClick={onCancel}>
+				<button className="button button-ghost" type="button" onClick={onCancel} disabled={isSubmitting}>
 					Annuler
 				</button>
-				<button className="button button-primary" type="submit">
-					Ajouter le lot
+				<button className="button button-primary" type="submit" disabled={isSubmitting || basins.length === 0}>
+					{isSubmitting ? "Enregistrement..." : "Ajouter le lot"}
 				</button>
 			</div>
 		</form>
 	);
 }
 
-function getLocalDateTimeValue() {
+function getLocalDateValue() {
 	const now = new Date();
-	const localDate = new Date(now.getTime() - now.getTimezoneOffset() * 60_000);
-	return localDate.toISOString().slice(0, 16);
-}
-
-function getLotReference(sequence: number) {
-	const today = new Date();
-	const datePart = [
-		today.getFullYear(),
-		String(today.getMonth() + 1).padStart(2, "0"),
-		String(today.getDate()).padStart(2, "0"),
-	].join("");
-
-	return `LOT-${datePart}-${String(sequence).padStart(3, "0")}`;
+	return new Date(now.getTime() - now.getTimezoneOffset() * 60_000).toISOString().slice(0, 10);
 }

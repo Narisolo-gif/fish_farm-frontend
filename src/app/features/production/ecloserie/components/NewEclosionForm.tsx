@@ -1,34 +1,68 @@
 "use client";
 
-import { type FormEvent, useEffect, useRef, useState } from "react";
+import { type FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { isEclosionRecord, type EclosionRecord } from "@/app/features/production/ecloserie/data/ecloserieData";
-import { isReproductionPonte } from "@/app/features/production/reproduction/data/reproductionData";
-import { productionStorageKeys, useLocalRecords, writeLocalRecords } from "@/app/features/production/shared/data/localProductionRecords";
+import { apiRequest } from "@/lib/apiClient";
+import type { PonteRecord } from "@/app/features/production/reproduction/types/reproduction.types";
+
+type ApiListResponse<T> = T[] | { results: T[] };
 
 export function NewEclosionForm() {
 	const router = useRouter();
-	const pontesSnapshot = useLocalRecords(productionStorageKeys.reproductionPontes, isReproductionPonte);
-	const eclosionsSnapshot = useLocalRecords(productionStorageKeys.eclosions, isEclosionRecord);
-	const pontes = pontesSnapshot.records;
-	const isLoadingPontes = !pontesSnapshot.isReady;
-	const pontesError = pontesSnapshot.error;
+	const [pontes, setPontes] = useState<PonteRecord[]>([]);
+	const [isLoadingPontes, setIsLoadingPontes] = useState(true);
+	const [pontesError, setPontesError] = useState("");
 	const [ponteReference, setPonteReference] = useState("");
 	const [saveError, setSaveError] = useState("");
-	const hatchingDateInput = useRef<HTMLInputElement>(null);
+	const [isSubmitting, setIsSubmitting] = useState(false);
+	const [hatchingDate, setHatchingDate] = useState(getLocalDateValue);
 
 	useEffect(() => {
-		if (hatchingDateInput.current) {
-			hatchingDateInput.current.value = getLocalDateValue();
-		}
+		let isActive = true;
+
+		void Promise.resolve().then(async () => {
+			const accessToken = localStorage.getItem("access_token");
+			if (!accessToken) {
+				if (isActive) {
+					setPontesError("Votre session a expiré. Veuillez vous reconnecter.");
+					setIsLoadingPontes(false);
+				}
+				return;
+			}
+
+			try {
+				const response = await apiRequest<ApiListResponse<PonteRecord>>(
+					"/api/v1/reproduction/pontes/",
+					{ headers: { Authorization: `Bearer ${accessToken}` } },
+				);
+				if (isActive) {
+					setPontes(Array.isArray(response) ? response : response.results);
+				}
+			} catch (error) {
+				if (isActive) {
+					setPontesError(
+						error instanceof Error
+							? error.message
+							: "Impossible de charger les pontes enregistrées.",
+					);
+				}
+			} finally {
+				if (isActive) {
+					setIsLoadingPontes(false);
+				}
+			}
+		});
+
+		return () => {
+			isActive = false;
+		};
 	}, []);
 
-	function handleSubmit(event: FormEvent<HTMLFormElement>) {
+	async function handleSubmit(event: FormEvent<HTMLFormElement>) {
 		event.preventDefault();
 		const form = event.currentTarget;
 		const formData = new FormData(form);
 		const reference = formData.get("reference");
-		const hatchingDate = formData.get("hatchingDate");
 		const fryQuantityValue = formData.get("fryQuantity");
 		const hatchedEggQuantityValue = formData.get("hatchedEggQuantity");
 		const observation = formData.get("observation");
@@ -42,7 +76,6 @@ export function NewEclosionForm() {
 			typeof hatchedEggQuantityValue !== "string" ||
 			typeof observation !== "string" ||
 			!selectedPonte ||
-			typeof hatchingDate !== "string" ||
 			!hatchingDate
 		) {
 			setSaveError("Vérifiez les champs obligatoires et sélectionnez une ponte enregistrée.");
@@ -52,32 +85,41 @@ export function NewEclosionForm() {
 		const fryQuantity = Number(fryQuantityValue);
 		const hatchedEggQuantity = hatchedEggQuantityValue ? Number(hatchedEggQuantityValue) : null;
 		if (
-			!Number.isFinite(fryQuantity) ||
-			fryQuantity < 0 ||
-			(hatchedEggQuantity !== null && (!Number.isFinite(hatchedEggQuantity) || hatchedEggQuantity < 0))
+			!Number.isInteger(fryQuantity) ||
+			fryQuantity <= 0 ||
+			(hatchedEggQuantity !== null && (!Number.isFinite(hatchedEggQuantity) || hatchedEggQuantity <= 0))
 		) {
-			setSaveError("Les quantités doivent être des nombres positifs ou nuls.");
+			setSaveError("La quantité d'alevins doit être un entier supérieur à 0 et la quantité d'œufs éclos, si renseignée, doit être supérieure à 0.");
 			return;
 		}
 
-		const eclosion: EclosionRecord = {
-			reference: reference.trim(),
-			ponteReference: selectedPonte.reference,
-			hatchingDate,
-			fryQuantity,
-			hatchedEggQuantity,
-			observation: observation.trim(),
-		};
+		const accessToken = localStorage.getItem("access_token");
+		if (!accessToken) {
+			setSaveError("Votre session a expiré. Veuillez vous reconnecter.");
+			return;
+		}
+
+		setIsSubmitting(true);
+		setSaveError("");
 
 		try {
-			if (eclosionsSnapshot.error) {
-				setSaveError(eclosionsSnapshot.error);
-				return;
-			}
-			writeLocalRecords(productionStorageKeys.eclosions, [eclosion, ...eclosionsSnapshot.records]);
+			await apiRequest("/api/v1/ecloserie/", {
+				method: "POST",
+				headers: { Authorization: `Bearer ${accessToken}` },
+				body: JSON.stringify({
+					reference: reference.trim(),
+					reference_ponte: selectedPonte.reference,
+					date_eclosion: hatchingDate,
+					quantite_oeufs_eclos: hatchedEggQuantity,
+					quantite_alevins_obtenu: fryQuantity,
+					observation: observation.trim(),
+				}),
+			});
 			router.push("/production/ecloserie");
 		} catch (error) {
 			setSaveError(error instanceof Error ? error.message : "Impossible d'enregistrer cette éclosion.");
+		} finally {
+			setIsSubmitting(false);
 		}
 	}
 
@@ -85,7 +127,6 @@ export function NewEclosionForm() {
 		<form className="form-card wide reproduction-entry-form" onSubmit={handleSubmit}>
 			<h2>Nouvelle éclosion</h2>
 			{pontesError && <p className="form-error" role="alert">{pontesError}</p>}
-			{eclosionsSnapshot.error && <p className="form-error" role="alert">{eclosionsSnapshot.error}</p>}
 			{!pontesError && !isLoadingPontes && pontes.length === 0 && (
 				<p className="form-error" role="status">
 					Aucune ponte enregistrée. Enregistrez d&apos;abord une ponte dans le module Reproduction.
@@ -109,21 +150,30 @@ export function NewEclosionForm() {
 				</label>
 				<label>
 					Référence éclosion
-					<input name="reference" type="text" required />
+					<input name="reference" type="text" maxLength={100} required disabled={isSubmitting} />
 				</label>
 				<label>
 					Date d&apos;éclosion
-					<input name="hatchingDate" type="date" ref={hatchingDateInput} readOnly required />
+					<input
+						name="hatchingDate"
+						type="date"
+						value={hatchingDate}
+						onChange={(event) => setHatchingDate(event.target.value)}
+						max={getLocalDateValue()}
+						required
+						disabled={isSubmitting}
+					/>
 				</label>
 				<label>
 					Quantité d&apos;alevins obtenue
 					<input
 						name="fryQuantity"
 						type="number"
-						min="0"
-						step="any"
+						min="1"
+						step="1"
 						inputMode="decimal"
 						required
+						disabled={isSubmitting}
 					/>
 				</label>
 				<label>
@@ -131,27 +181,28 @@ export function NewEclosionForm() {
 					<input
 						name="hatchedEggQuantity"
 						type="number"
-						min="0"
-						step="any"
+						min="0.01"
+						step="0.01"
 						inputMode="decimal"
+						disabled={isSubmitting}
 					/>
 				</label>
 			</div>
 			<label>
 				Observation
-				<textarea name="observation" />
+				<textarea name="observation" disabled={isSubmitting} />
 			</label>
 			{saveError && <p className="form-error" role="alert">{saveError}</p>}
 			<div className="form-actions">
-				<button className="button button-ghost" type="button" onClick={() => router.push("/production/ecloserie")}>
+				<button className="button button-ghost" type="button" onClick={() => router.push("/production/ecloserie")} disabled={isSubmitting}>
 					Annuler
 				</button>
 				<button
 					className="button button-primary"
 					type="submit"
-					disabled={isLoadingPontes || !eclosionsSnapshot.isReady || Boolean(pontesError) || Boolean(eclosionsSnapshot.error) || pontes.length === 0}
+					disabled={isLoadingPontes || Boolean(pontesError) || pontes.length === 0 || isSubmitting}
 				>
-					Enregistrer l&apos;éclosion
+					{isSubmitting ? "Enregistrement..." : "Enregistrer l'éclosion"}
 				</button>
 			</div>
 		</form>

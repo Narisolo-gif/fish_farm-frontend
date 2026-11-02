@@ -2,6 +2,7 @@ export type EnvironmentalBasin = {
 	id: number;
 	reference: string;
 	categorie: "REPRODUCTION" | "ECLOSERIE" | "TRAITEMENT" | "STOCKS" | "GROSSISSEMENT";
+	capacity: number;
 	statut: string;
 };
 

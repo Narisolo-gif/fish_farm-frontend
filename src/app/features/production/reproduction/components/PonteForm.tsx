@@ -1,52 +1,44 @@
 "use client";
 
-import { type FormEvent, useEffect, useRef, useState } from "react";
-import type { ReproductionPonte } from "@/app/features/production/reproduction/data/reproductionData";
+import { type FormEvent, useState } from "react";
+import type {
+	PonteInput,
+	ReproductionRecord,
+} from "@/app/features/production/reproduction/types/reproduction.types";
 
 export function PonteForm({
-	basins,
-	referenceSequence,
+	reproductions,
+	basinReferences,
+	isSubmitting,
+	error,
 	onCancel,
 	onSubmit,
 }: {
-	basins: string[];
-	referenceSequence: number;
+	reproductions: ReproductionRecord[];
+	basinReferences: Record<number, string>;
+	isSubmitting: boolean;
+	error: string;
 	onCancel: () => void;
-	onSubmit: (ponte: ReproductionPonte) => void;
+	onSubmit: (ponte: PonteInput) => void;
 }) {
-	const [basin, setBasin] = useState("");
+	const [reproductionId, setReproductionId] = useState("");
 	const [eggQuantity, setEggQuantity] = useState("");
 	const [observation, setObservation] = useState("");
-	const [status, setStatus] = useState("");
-	const addedAtInput = useRef<HTMLInputElement>(null);
-	const referenceInput = useRef<HTMLInputElement>(null);
-
-	useEffect(() => {
-		if (addedAtInput.current) {
-			addedAtInput.current.value = getLocalDateTimeValue();
-		}
-		if (referenceInput.current) {
-			referenceInput.current.value = getPonteReference(referenceSequence);
-		}
-	}, [referenceSequence]);
+	const [reference, setReference] = useState("");
+	const [date, setDate] = useState(getLocalDateValue());
 
 	function handleSubmit(event: FormEvent<HTMLFormElement>) {
 		event.preventDefault();
-		const formData = new FormData(event.currentTarget);
-		const reference = formData.get("reference");
-		const addedAt = formData.get("addedAt");
-		if (
-			typeof reference !== "string" || !reference ||
-			typeof addedAt !== "string" || !addedAt
-		) {
+		const reproduction = reproductions.find((item) => String(item.id) === reproductionId);
+		if (!reproduction) {
 			return;
 		}
 
 		onSubmit({
-			basin,
-			reference,
-			addedAt,
-			eggQuantity: Number(eggQuantity),
+			reference: reference.trim(),
+			bassin: reproduction.bassin,
+			date_ponte: date,
+			quantite_oeuf_obtenu: Number(eggQuantity),
 			observation: observation.trim(),
 		});
 	}
@@ -56,70 +48,80 @@ export function PonteForm({
 			<h2>Enregistrer une ponte</h2>
 			<div className="form-grid">
 				<label>
-					Bassin
-					<select value={basin} onChange={(event) => setBasin(event.target.value)} required>
-						<option value="" disabled>Sélectionner un bassin</option>
-						{basins.map((availableBasin) => (
-							<option key={availableBasin} value={availableBasin}>{availableBasin}</option>
+					Reproduction active
+					<select
+						value={reproductionId}
+						onChange={(event) => setReproductionId(event.target.value)}
+						required
+						disabled={isSubmitting}
+					>
+						<option value="" disabled>Sélectionner une reproduction</option>
+						{reproductions.map((reproduction) => (
+							<option key={reproduction.id} value={reproduction.id}>
+								{reproduction.reference} · {basinReferences[reproduction.bassin] ?? `Bassin ${reproduction.bassin}`}
+							</option>
 						))}
 					</select>
 				</label>
 				<label>
 					Référence ponte
-					<input type="text" name="reference" ref={referenceInput} readOnly required />
+					<input
+						type="text"
+						value={reference}
+						onChange={(event) => setReference(event.target.value)}
+						maxLength={100}
+						required
+						disabled={isSubmitting}
+					/>
 				</label>
 				<label>
-					Date de l&apos;ajout
-					<input type="datetime-local" name="addedAt" ref={addedAtInput} required />
+					Date de ponte
+					<input
+						type="date"
+						value={date}
+						max={getLocalDateValue()}
+						onChange={(event) => setDate(event.target.value)}
+						required
+						disabled={isSubmitting}
+					/>
 				</label>
 				<label>
 					Quantité d&apos;œufs obtenus
 					<input
 						type="number"
-						name="eggQuantity"
-						min="0"
-						step="any"
+						min="0.01"
+						step="0.01"
 						inputMode="decimal"
 						value={eggQuantity}
 						onChange={(event) => setEggQuantity(event.target.value)}
 						required
+						disabled={isSubmitting}
 					/>
 				</label>
 			</div>
 			<label>
 				Observation
 				<textarea
-					name="observation"
 					value={observation}
 					onChange={(event) => setObservation(event.target.value)}
 					placeholder="Ajouter une observation (facultatif)"
+					disabled={isSubmitting}
 				/>
 			</label>
+			{error && <p className="form-error" role="alert">{error}</p>}
 			<div className="form-actions">
-				<button className="button button-ghost" type="button" onClick={onCancel}>
+				<button className="button button-ghost" type="button" onClick={onCancel} disabled={isSubmitting}>
 					Annuler
 				</button>
-				<button className="button button-primary" type="submit">
-					Enregistrer la ponte
+				<button className="button button-primary" type="submit" disabled={isSubmitting || reproductions.length === 0}>
+					{isSubmitting ? "Enregistrement..." : "Enregistrer la ponte"}
 				</button>
 			</div>
 		</form>
 	);
 }
 
-function getLocalDateTimeValue() {
+function getLocalDateValue() {
 	const now = new Date();
-	const localDate = new Date(now.getTime() - now.getTimezoneOffset() * 60_000);
-	return localDate.toISOString().slice(0, 16);
-}
-
-function getPonteReference(sequence: number) {
-	const today = new Date();
-	const datePart = [
-		today.getFullYear(),
-		String(today.getMonth() + 1).padStart(2, "0"),
-		String(today.getDate()).padStart(2, "0"),
-	].join("");
-
-	return `PON-${datePart}-${String(sequence).padStart(3, "0")}`;
+	return new Date(now.getTime() - now.getTimezoneOffset() * 60_000).toISOString().slice(0, 10);
 }
