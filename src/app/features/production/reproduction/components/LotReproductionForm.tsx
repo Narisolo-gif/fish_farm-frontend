@@ -76,7 +76,7 @@ export function LotReproductionForm({
 				<label>
 					Date de l&apos;ajout
 					<input
-						type="datetime-local"
+						type="date"
 						name="addedAt"
 						ref={addedAtInput}
 						required

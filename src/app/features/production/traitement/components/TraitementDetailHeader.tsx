@@ -4,15 +4,21 @@ import type { TraitementSection } from "@/app/features/production/traitement/typ
 
 export function TraitementDetailHeader({
 	traitementId,
-	isClosed,
+	referenceLot,
+	statut,
+	isLoading,
 	activeFeature,
 	onFeatureChange,
 }: {
 	traitementId: string;
-	isClosed: boolean;
+	referenceLot: string | null;
+	statut: "EN_COURS" | "CLOTUREE" | null;
+	isLoading: boolean;
 	activeFeature: TraitementSection;
 	onFeatureChange: (feature: TraitementSection) => void;
 }) {
+	const isClosed = statut === "CLOTUREE";
+
 	return (
 		<>
 			<PageHeader eyebrow="Production" title="Détail du traitement" />
@@ -23,11 +29,17 @@ export function TraitementDetailHeader({
 				</div>
 				<div>
 					<dt>Lot</dt>
-					<dd>—</dd>
+					<dd>{isLoading ? "Chargement..." : referenceLot ?? "—"}</dd>
 				</div>
 				<div>
 					<dt>Statut</dt>
-					<dd><span className={`badge${isClosed ? " badge-amber" : " badge-green"}`}>{isClosed ? "Clôturé" : "Ouvert"}</span></dd>
+					<dd>
+						{isLoading ? "Chargement..." : statut ? (
+							<span className={`badge${isClosed ? " badge-amber" : " badge-green"}`}>
+								{isClosed ? "Clôturé" : "En cours"}
+							</span>
+						) : "—"}
+					</dd>
 				</div>
 			</dl>
 			<TraitementFeatureNav activeFeature={activeFeature} onSelect={onFeatureChange} />

@@ -8,18 +8,10 @@ import { usePagination } from "@/app/hooks/usePagination";
 import { LotReproductionForm } from "@/app/features/production/reproduction/components/LotReproductionForm";
 import { PonteForm } from "@/app/features/production/reproduction/components/PonteForm";
 import { demoReproductionBasins, isReproductionPonte, type ReproductionLot } from "@/app/features/production/reproduction/data/reproductionData";
+import { EnvironmentalParametersSection } from "@/app/features/production/shared/environnement/components/EnvironmentalParametersSection";
 import { productionStorageKeys, useLocalRecords, writeLocalRecords } from "@/app/features/production/shared/data/localProductionRecords";
 
 const rowsPerPage = 5;
-
-const environmentalParameters = [
-	{ name: "Température de l'eau", value: "— °C" },
-	{ name: "Température de l'air", value: "— °C" },
-	{ name: "Taux d'oxygène", value: "— mg/L" },
-	{ name: "Taux de nitrites", value: "— mg/L" },
-	{ name: "Taux de nitrates", value: "— mg/L" },
-	{ name: "Taux d'ammoniac", value: "— mg/L" },
-];
 
 const demoBasinPlan = demoReproductionBasins.map(
 	(basin) => ({
@@ -110,7 +102,7 @@ export function ReproductionDashboard() {
 				/>
 			) : (
 				<>
-					<div className="reproduction-toolbar">
+					{/* <div className="reproduction-toolbar">
 						<label className="reproduction-control">
 							<span>Bassin / Hapa</span>
 							<select
@@ -125,24 +117,16 @@ export function ReproductionDashboard() {
 								))}
 							</select>
 						</label>
-					</div>
+					</div> */}
 
-					<section className="reproduction-section" id="environment">
-						<SectionHeading title={`Paramètres environnementaux · ${selectedBasin === "all" ? "Tous les bassins" : selectedBasin}`} />
-						<DataTable
-							className="reproduction-table"
-							headers={["Paramètre", "Valeur actuelle", "Statut"]}
-							rows={environmentalParameters.map((parameter) => [
-								parameter.name,
-								parameter.value,
-								<span className="badge" key={`${parameter.name}-status`}>Non renseigné</span>,
-							])}
-						/>
-					</section>
+					<EnvironmentalParametersSection
+						className="reproduction-section"
+						basinCategory="REPRODUCTION"
+					/>
 
 					<section className="reproduction-section" id="basin-plan">
 						<div className="reproduction-section-heading">
-							<SectionHeading title="Plan des bassins de reproduction actifs" />
+							<SectionHeading title="Historique des lots de reproduction" />
 							<p className="reproduction-data-note">Données d&apos;exemple à connecter à l&apos;API.</p>
 						</div>
 						<DataTable
@@ -201,7 +185,7 @@ export function ReproductionDashboard() {
 
 					<nav className="reproduction-actions" aria-label="Actions de reproduction">
 						<Button variant="ghost" href="/environnement/new">+ Paramètre environnemental</Button>
-						<Button variant="ghost" href="/bassins/new">Configurer bassin / hapa</Button>
+						{/* <Button variant="ghost" href="/bassins/new">Configurer bassin / hapa</Button> */}
 						<button
 							className="button button-ghost"
 							type="button"

@@ -2,7 +2,7 @@
 
 import { DataTable } from "@/components/DataTable";
 import { Button, SectionHeading, StatCard } from "@/components/ui";
-import { EnvironmentalParametersTable } from "@/app/features/production/shared/environnement/components/EnvironmentalParametersTable";
+import { EnvironmentalParametersSection } from "@/app/features/production/shared/environnement/components/EnvironmentalParametersSection";
 import { isEclosionRecord } from "@/app/features/production/ecloserie/data/ecloserieData";
 import { productionStorageKeys, useLocalRecords } from "@/app/features/production/shared/data/localProductionRecords";
 
@@ -17,11 +17,7 @@ export function EcloserieDashboard() {
 				<StatCard label="Quantité d'œufs éclos" value="—" detail="Données à connecter à l'API" />
 			</section>
 
-			<section className="ecloserie-section" id="environment">
-				<SectionHeading title="Paramètres environnementaux" />
-				<EnvironmentalParametersTable />
-				<p className="ecloserie-data-note">Les relevés environnementaux seront affichés après leur connexion à l&apos;API.</p>
-			</section>
+			<EnvironmentalParametersSection basinCategory="ECLOSERIE" />
 
 			<section className="ecloserie-section" id="hatching-history">
 				<SectionHeading title="Historique des éclosions" />

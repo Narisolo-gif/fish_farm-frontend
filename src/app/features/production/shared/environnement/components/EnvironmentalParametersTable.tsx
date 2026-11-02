@@ -1,35 +1,36 @@
 import { DataTable } from "@/components/DataTable";
-import type { EnvironmentalMeasurement } from "@/app/features/production/shared/environnement/types/environment.types";
+import type {
+	EnvironmentalBasin,
+	EnvironmentalMeasurement,
+} from "@/app/features/production/shared/environnement/types/environment.types";
 
-function displayValues(values: number[] | undefined) {
-	return values?.length ? values.map((value) => value.toLocaleString("fr-FR")).join(", ") : "—";
+function displayValue(value: number | string, unit = "") {
+	return `${Number(value).toLocaleString("fr-FR")}${unit}`;
 }
 
 export function EnvironmentalParametersTable({
-	measurement,
+	measurements,
+	basins,
 }: {
-	measurement?: EnvironmentalMeasurement | null;
+	measurements: EnvironmentalMeasurement[];
+	basins: EnvironmentalBasin[];
 }) {
-	const environmentalParameters = [
-		{ name: "Température de l'eau", value: measurement ? `${measurement.waterTemperature.toLocaleString("fr-FR")} °C` : "— °C" },
-		{ name: "Température de l'air", value: measurement ? `${measurement.airTemperature.toLocaleString("fr-FR")} °C` : "— °C" },
-		{ name: "Taux d'oxygène", value: measurement ? `${measurement.oxygenRate.toLocaleString("fr-FR")} mg/L` : "— mg/L" },
-		{ name: "pH", value: displayValues(measurement?.ph) },
-		{ name: "Taux de nitrites", value: displayValues(measurement?.nitrite) },
-		{ name: "Taux de nitrates", value: displayValues(measurement?.nitrate) },
-		{ name: "Ammoniac", value: displayValues(measurement?.ammonia) },
-	];
+	const basinReferences = new Map(basins.map((basin) => [basin.id, basin.reference]));
 
 	return (
 		<DataTable
 			className="ecloserie-table"
-			headers={["Paramètre", "Valeur actuelle", "Statut"]}
-			rows={environmentalParameters.map((parameter) => [
-				parameter.name,
-				parameter.value,
-				<span className={`badge${measurement ? " badge-green" : ""}`} key={`${parameter.name}-status`}>
-					{measurement ? "Enregistré localement" : "Non renseigné"}
-				</span>,
+			headers={["Bassin", "Date et heure", "Temp. eau", "Temp. air", "Oxygène", "pH", "Nitrites", "Nitrates", "Ammoniac"]}
+			rows={measurements.map((measurement) => [
+				basinReferences.get(measurement.bassin) ?? `Bassin ${measurement.bassin}`,
+				new Date(measurement.date_heure_prelevement).toLocaleString("fr-FR"),
+				displayValue(measurement.temperature_eau, " °C"),
+				displayValue(measurement.temperature_air, " °C"),
+				displayValue(measurement.oxygene, " mg/L"),
+				displayValue(measurement.ph),
+				displayValue(measurement.nitrite, " mg/L"),
+				displayValue(measurement.nitrate, " mg/L"),
+				displayValue(measurement.ammoniac, " mg/L"),
 			])}
 		/>
 	);

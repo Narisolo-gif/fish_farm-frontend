@@ -60,7 +60,7 @@ export function StockDetail({ lotStockageId }: { lotStockageId: string }) {
             )}
             {visitedSections.includes("environnement") && (
                 <div hidden={activeSection !== "environnement"}>
-                    <ParamEnvSection />
+                    <ParamEnvSection basinCategory="STOCKS" />
                 </div>
             )}
             {visitedSections.includes("cloture") && (

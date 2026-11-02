@@ -1,43 +1,46 @@
 "use client";
 
 import { type FormEvent, useState } from "react";
-import { BassinSelector } from "@/app/features/production/shared/bassins/components/BassinSelector";
-import type { EnvironmentalMeasurement } from "@/app/features/production/shared/environnement/types/environment.types";
-
-const phOptions = [6.2, 6.8, 7.2, 7.6, 7.8, 8.1];
-const nitrateOptions = [0, 10, 20, 25, 50, 100, 250];
-const nitriteOptions = [0, 1, 5, 10];
-const ammoniaOptions = [0, 0.5, 1, 3, 5, 10];
+import type {
+  EnvironmentalBasin,
+  EnvironmentalMeasurementInput,
+} from "@/app/features/production/shared/environnement/types/environment.types";
 
 export function EnvironnementParametersForm({
+  basins,
+  initialBasinId,
+  isSubmitting,
   onCancel,
   onSubmit,
 }: {
+  basins: EnvironmentalBasin[];
+  initialBasinId: string;
+  isSubmitting: boolean;
   onCancel: () => void;
-  onSubmit: (measurement: EnvironmentalMeasurement) => void;
+  onSubmit: (measurement: EnvironmentalMeasurementInput) => void;
 }) {
   const [sampledAt, setSampledAt] = useState("");
-  const [basin, setBasin] = useState("");
+  const [basin, setBasin] = useState(initialBasinId === "all" ? "" : initialBasinId);
   const [oxygenRate, setOxygenRate] = useState("");
   const [airTemperature, setAirTemperature] = useState("");
   const [waterTemperature, setWaterTemperature] = useState("");
-  const [ph, setPh] = useState<number[]>([]);
-  const [nitrate, setNitrate] = useState<number[]>([]);
-  const [nitrite, setNitrite] = useState<number[]>([]);
-  const [ammonia, setAmmonia] = useState<number[]>([]);
+  const [ph, setPh] = useState("");
+  const [nitrate, setNitrate] = useState("");
+  const [nitrite, setNitrite] = useState("");
+  const [ammonia, setAmmonia] = useState("");
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     onSubmit({
-      sampledAt,
-      basin,
-      oxygenRate: Number(oxygenRate),
-      airTemperature: Number(airTemperature),
-      waterTemperature: Number(waterTemperature),
-      ph,
-      nitrate,
-      nitrite,
-      ammonia,
+      bassin: Number(basin),
+      date_heure_prelevement: new Date(sampledAt).toISOString(),
+      oxygene: Number(oxygenRate),
+      temperature_air: Number(airTemperature),
+      temperature_eau: Number(waterTemperature),
+      ph: Number(ph),
+      nitrate: Number(nitrate),
+      nitrite: Number(nitrite),
+      ammoniac: Number(ammonia),
     });
   }
 
@@ -53,7 +56,20 @@ export function EnvironnementParametersForm({
             required
           />
         </label>
-        <BassinSelector value={basin} onChange={setBasin} />
+        <label>
+          Bassin
+          <select
+            value={basin}
+            onChange={(event) => setBasin(event.target.value)}
+            required
+            disabled={basins.length === 0}
+          >
+            <option value="" disabled>Sélectionner un bassin</option>
+            {basins.map((item) => (
+              <option key={item.id} value={item.id}>{item.reference}</option>
+            ))}
+          </select>
+        </label>
         <label>
           Taux d&apos;oxygène (mg/L)
           <input
@@ -89,62 +105,33 @@ export function EnvironnementParametersForm({
         </label>
       </div>
 
-      <div className="environment-measurement-groups">
-        <MeasurementCheckboxGroup label="pH" options={phOptions} selected={ph} onChange={setPh} />
-        <MeasurementCheckboxGroup label="Taux de nitrate (mg/L)" options={nitrateOptions} selected={nitrate} onChange={setNitrate} />
-        <MeasurementCheckboxGroup label="Taux de nitrite (mg/L)" options={nitriteOptions} selected={nitrite} onChange={setNitrite} />
-        <MeasurementCheckboxGroup label="Ammoniac (mg/L)" options={ammoniaOptions} selected={ammonia} onChange={setAmmonia} />
+      <div className="form-grid">
+        <label>
+          pH
+          <input type="number" min="0" max="14" step="any" value={ph} onChange={(event) => setPh(event.target.value)} required />
+        </label>
+        <label>
+          Taux de nitrites (mg/L)
+          <input type="number" min="0" step="any" value={nitrite} onChange={(event) => setNitrite(event.target.value)} required />
+        </label>
+        <label>
+          Taux de nitrates (mg/L)
+          <input type="number" min="0" step="any" value={nitrate} onChange={(event) => setNitrate(event.target.value)} required />
+        </label>
+        <label>
+          Ammoniac (mg/L)
+          <input type="number" min="0" step="any" value={ammonia} onChange={(event) => setAmmonia(event.target.value)} required />
+        </label>
       </div>
 
-      <p className="helper-text">Les emplacements des codes couleur sont laissés vides, en attente de leur définition.</p>
-
       <div className="form-actions">
-        <button className="button button-ghost" type="button" onClick={onCancel}>
+        <button className="button button-ghost" type="button" onClick={onCancel} disabled={isSubmitting}>
           Annuler
         </button>
-        <button className="button button-primary" type="submit">
-          Enregistrer le prélèvement
+        <button className="button button-primary" type="submit" disabled={isSubmitting}>
+          {isSubmitting ? "Enregistrement..." : "Enregistrer le prélèvement"}
         </button>
       </div>
     </form>
-  );
-}
-
-function MeasurementCheckboxGroup({
-  label,
-  options,
-  selected,
-  onChange,
-}: {
-  label: string;
-  options: number[];
-  selected: number[];
-  onChange: (values: number[]) => void;
-}) {
-  function toggleOption(option: number) {
-    onChange(
-      selected.includes(option)
-        ? selected.filter((value) => value !== option)
-        : [...selected, option],
-    );
-  }
-
-  return (
-    <fieldset className="environment-measurement-group">
-      <legend>{label}</legend>
-      <div className="environment-checkbox-options">
-        {options.map((option) => (
-          <label className="environment-checkbox-option" key={option}>
-            <span className="environment-color-placeholder" aria-hidden="true" />
-            <input
-              type="checkbox"
-              checked={selected.includes(option)}
-              onChange={() => toggleOption(option)}
-            />
-            <span>{option.toLocaleString("fr-FR")}</span>
-          </label>
-        ))}
-      </div>
-    </fieldset>
   );
 }

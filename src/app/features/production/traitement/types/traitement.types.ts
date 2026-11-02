@@ -13,3 +13,8 @@ export type MortaliteRecord = {
 	deaths: number;
 	observation: string;
 };
+
+export type TraitementDetailData = {
+	reference_lot: string;
+	statut: "EN_COURS" | "CLOTUREE";
+};

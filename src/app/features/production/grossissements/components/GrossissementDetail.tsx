@@ -68,7 +68,7 @@ export function GrossissementDetail() {
       )}
       {visitedSections.includes("environnement") && (
         <div hidden={activeSection !== "environnement"}>
-          <ParamEnvSection />
+          <ParamEnvSection basinCategory="GROSSISSEMENT" />
         </div>
       )}
       {visitedSections.includes("dashboard") && (
