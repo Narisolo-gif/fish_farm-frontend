@@ -586,6 +586,63 @@ button {
     margin-bottom: 10px
 }
 
+.date-filter input:focus-visible,
+.filter-clear:focus-visible {
+    outline: 2px solid var(--teal);
+    outline-offset: 2px
+}
+
+.date-filter {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px
+}
+
+.date-filter label {
+    color: var(--muted);
+    font-size: 12px
+}
+
+.date-filter input {
+    min-height: 35px;
+    padding: 0 12px;
+    border: 1px solid var(--line);
+    border-radius: 5px;
+    background: var(--surface);
+    color: var(--ink);
+    font: inherit
+}
+
+.date-filter input:focus {
+    border-color: var(--teal)
+}
+
+.filter-clear {
+    min-height: 32px;
+    padding: 0 10px;
+    border: 1px solid transparent;
+    border-radius: 5px;
+    background: transparent;
+    color: var(--teal-dark);
+    font-size: 12px;
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 2px
+}
+
+.filter-clear:hover {
+    border-color: var(--line);
+    background: var(--paper)
+}
+
+@media (max-width: 620px) {
+    .date-filter,
+    .date-filter input {
+        width: 100%
+    }
+}
+
 .reproduction-section,
 .ecloserie-section {
     min-width: 0;
@@ -1563,6 +1620,21 @@ tr:last-child td {
 .form-card textarea:focus,
 .login-card input:focus {
     border-color: var(--teal)
+}
+
+.form-card [aria-invalid="true"] {
+    border-color: var(--red)
+}
+
+.form-card .field-error,
+.form-card .field-hint {
+    font-size: 12px;
+    font-weight: 500
+}
+
+.form-card .field-error,
+.form-card .field-hint.is-invalid {
+    color: var(--red)
 }
 
 .password-field {

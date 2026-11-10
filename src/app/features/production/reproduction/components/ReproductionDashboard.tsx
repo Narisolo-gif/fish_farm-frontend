@@ -1,14 +1,21 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { Button, SectionHeading } from "@/components/ui";
+import { SectionHeading } from "@/components/ui";
 import { DataTable } from "@/components/DataTable";
+import { ListSearch } from "@/components/ListSearch";
 import { Pagination } from "@/components/Pagination";
 import { usePagination } from "@/app/hooks/usePagination";
+import { useDebouncedValue } from "@/app/hooks/useDebouncedValue";
 import { LotReproductionForm } from "@/app/features/production/reproduction/components/LotReproductionForm";
 import { PonteForm } from "@/app/features/production/reproduction/components/PonteForm";
+import {
+	ReproductionBasinHeader,
+	getCurrentLot,
+} from "@/app/features/production/reproduction/components/ReproductionBasinHeader";
 import { EnvironmentalParametersSection } from "@/app/features/production/shared/environnement/components/EnvironmentalParametersSection";
-import { apiRequest } from "@/lib/apiClient";
+import { ApiError, type ApiFieldErrors, apiRequest } from "@/lib/apiClient";
+import { matchesSearch } from "@/lib/search";
 import type { EnvironmentalBasin } from "@/app/features/production/shared/environnement/types/environment.types";
 import type {
 	PonteInput,
@@ -18,9 +25,9 @@ import type {
 } from "@/app/features/production/reproduction/types/reproduction.types";
 
 const rowsPerPage = 5;
+const historyRange = 5;
 
 type ApiListResponse<T> = T[] | { results: T[] };
-type HistoryRange = 5 | 10;
 
 function getResults<T>(response: ApiListResponse<T>): T[] {
 	return Array.isArray(response) ? response : response.results;
@@ -30,13 +37,22 @@ function getErrorMessage(error: unknown, fallback: string) {
 	return error instanceof Error ? error.message : fallback;
 }
 
+function formatDate(date: string) {
+	return new Date(`${date}T00:00:00`).toLocaleDateString("fr-FR");
+}
+
+function speciesLabel(species: ReproductionRecord["espece"]) {
+	return species === "CARPE" ? "Carpe" : "Tilapia";
+}
+
 export function ReproductionDashboard() {
 	const [accessToken, setAccessToken] = useState<string | null>(null);
 	const [basins, setBasins] = useState<EnvironmentalBasin[]>([]);
 	const [reproductions, setReproductions] = useState<ReproductionRecord[]>([]);
 	const [pontes, setPontes] = useState<PonteRecord[]>([]);
-	const [selectedBasin, setSelectedBasin] = useState("all");
-	const [historyRange, setHistoryRange] = useState<HistoryRange>(5);
+	const [selectedBasinId, setSelectedBasinId] = useState<number | null>(null);
+	const [lotSearch, setLotSearch] = useState("");
+	const [ponteSearch, setPonteSearch] = useState("");
 	const [isLotFormOpen, setIsLotFormOpen] = useState(false);
 	const [isPonteFormOpen, setIsPonteFormOpen] = useState(false);
 	const [isLoading, setIsLoading] = useState(true);
@@ -45,7 +61,10 @@ export function ReproductionDashboard() {
 	const [reloadVersion, setReloadVersion] = useState(0);
 	const [loadError, setLoadError] = useState("");
 	const [lotError, setLotError] = useState("");
+	const [lotFieldErrors, setLotFieldErrors] = useState<ApiFieldErrors>({});
 	const [ponteError, setPonteError] = useState("");
+	const debouncedLotSearch = useDebouncedValue(lotSearch);
+	const debouncedPonteSearch = useDebouncedValue(ponteSearch);
 
 	useEffect(() => {
 		let isActive = true;
@@ -98,9 +117,17 @@ export function ReproductionDashboard() {
 				]);
 
 				if (isActive) {
-					setBasins(getResults(basinsResponse));
+					const loadedBasins = getResults(basinsResponse);
+					setBasins(loadedBasins);
 					setReproductions(getResults(reproductionsResponse));
 					setPontes(getResults(pontesResponse));
+					// Le backend trie les bassins par date de création décroissante :
+					// le premier est le plus récent et sert de bassin par défaut.
+					setSelectedBasinId((current) =>
+						current !== null && loadedBasins.some((basin) => basin.id === current)
+							? current
+							: loadedBasins[0]?.id ?? null,
+					);
 				}
 			} catch (error) {
 				if (isActive) {
@@ -120,21 +147,42 @@ export function ReproductionDashboard() {
 		};
 	}, [accessToken, reloadVersion]);
 
+	const selectedBasin = basins.find((basin) => basin.id === selectedBasinId) ?? null;
 	const activeReproductions = reproductions.filter((reproduction) => reproduction.statut === "ACTIF");
 	const activeReproductionBasinIds = new Set(activeReproductions.map((reproduction) => reproduction.bassin));
 	const availableBasins = basins.filter(
 		(basin) => basin.statut === "ACTIF" && !activeReproductionBasinIds.has(basin.id),
 	);
-	const basinById = useMemo(
-		() => new Map(basins.map((basin) => [basin.id, basin])),
-		[basins],
-	);
 	const reproductionById = useMemo(
 		() => new Map(reproductions.map((reproduction) => [reproduction.id, reproduction])),
 		[reproductions],
 	);
-	const filteredReproductions = reproductions.filter(
-		(reproduction) => selectedBasin === "all" || String(reproduction.bassin) === selectedBasin,
+	const basinReferences = Object.fromEntries(
+		basins.map((basin) => [basin.id, basin.reference]),
+	);
+
+	// Toutes les données affichées sont celles du bassin sélectionné.
+	const basinReproductions = reproductions.filter((reproduction) => reproduction.bassin === selectedBasinId);
+	const basinActiveReproduction = basinReproductions.find((reproduction) => reproduction.statut === "ACTIF");
+	const currentLot = getCurrentLot(basinReproductions);
+	const basinPontes = pontes.filter(
+		(ponte) => reproductionById.get(ponte.reproduction)?.bassin === selectedBasinId,
+	);
+
+	const filteredReproductions = basinReproductions.filter((reproduction) =>
+		matchesSearch(
+			[
+				reproduction.reference,
+				speciesLabel(reproduction.espece),
+				reproduction.date_ajout,
+				formatDate(reproduction.date_ajout),
+				reproduction.quantite_male,
+				reproduction.quantite_femelle,
+				reproduction.statut === "ACTIF" ? "Actif" : "Inactif",
+				reproduction.observation,
+			],
+			debouncedLotSearch,
+		),
 	);
 	const {
 		items: visibleReproductions,
@@ -144,20 +192,31 @@ export function ReproductionDashboard() {
 		startItem,
 		endItem,
 	} = usePagination(filteredReproductions, rowsPerPage);
-	const historyPontes = pontes
-		.filter((ponte) => {
-			if (selectedBasin === "all") {
-				return true;
-			}
-			return String(reproductionById.get(ponte.reproduction)?.bassin) === selectedBasin;
-		})
+
+	const filteredPontes = basinPontes.filter((ponte) =>
+		matchesSearch(
+			[
+				ponte.reference,
+				reproductionById.get(ponte.reproduction)?.reference,
+				ponte.date_ponte,
+				formatDate(ponte.date_ponte),
+				Number(ponte.quantite_oeuf_obtenu),
+				ponte.observation,
+			],
+			debouncedPonteSearch,
+		),
+	);
+	const historyPontes = [...filteredPontes]
 		.sort((first, second) =>
 			first.date_ponte.localeCompare(second.date_ponte) || first.id - second.id,
 		)
 		.slice(-historyRange);
-	const basinReferences = Object.fromEntries(
-		basins.map((basin) => [basin.id, basin.reference]),
-	);
+
+	function selectBasin(basinId: number | null) {
+		setSelectedBasinId(basinId);
+		setLotSearch("");
+		setPonteSearch("");
+	}
 
 	async function createReproduction(reproduction: ReproductionInput) {
 		setIsSubmittingLot(true);
@@ -170,10 +229,17 @@ export function ReproductionDashboard() {
 				body: JSON.stringify(reproduction),
 			});
 			setIsLotFormOpen(false);
-			setSelectedBasin(String(reproduction.bassin));
+			setLotFieldErrors({});
+			selectBasin(reproduction.bassin);
 			setReloadVersion((version) => version + 1);
 		} catch (error) {
-			setLotError(getErrorMessage(error, "Impossible d'ajouter la reproduction."));
+			if (error instanceof ApiError && Object.keys(error.fieldErrors).length > 0) {
+				setLotFieldErrors(error.fieldErrors);
+				setLotError(error.generalMessage);
+			} else {
+				setLotFieldErrors({});
+				setLotError(getErrorMessage(error, "Impossible d'ajouter la reproduction."));
+			}
 		} finally {
 			setIsSubmittingLot(false);
 		}
@@ -190,7 +256,7 @@ export function ReproductionDashboard() {
 				body: JSON.stringify(ponte),
 			});
 			setIsPonteFormOpen(false);
-			setSelectedBasin(String(ponte.bassin));
+			selectBasin(ponte.bassin);
 			setReloadVersion((version) => version + 1);
 		} catch (error) {
 			setPonteError(getErrorMessage(error, "Impossible d'enregistrer la ponte."));
@@ -199,6 +265,8 @@ export function ReproductionDashboard() {
 		}
 	}
 
+	const basinReference = selectedBasin?.reference ?? "";
+
 	return (
 		<div className="reproduction-dashboard">
 			{loadError && <p className="form-error" role="alert">{loadError}</p>}
@@ -206,10 +274,13 @@ export function ReproductionDashboard() {
 			{isLotFormOpen ? (
 				<LotReproductionForm
 					basins={availableBasins}
+					defaultBasinId={selectedBasinId}
 					isSubmitting={isSubmittingLot}
 					error={lotError}
+					fieldErrors={lotFieldErrors}
 					onCancel={() => {
 						setLotError("");
+						setLotFieldErrors({});
 						setIsLotFormOpen(false);
 					}}
 					onSubmit={(reproduction) => void createReproduction(reproduction)}
@@ -218,6 +289,7 @@ export function ReproductionDashboard() {
 				<PonteForm
 					reproductions={activeReproductions}
 					basinReferences={basinReferences}
+					defaultReproductionId={basinActiveReproduction?.id}
 					isSubmitting={isSubmittingPonte}
 					error={ponteError}
 					onCancel={() => {
@@ -228,45 +300,55 @@ export function ReproductionDashboard() {
 				/>
 			) : (
 				<>
+					<ReproductionBasinHeader
+						basins={basins}
+						selectedBasinId={selectedBasinId}
+						currentLot={currentLot}
+						isLoading={isLoading}
+						onSelectBasin={selectBasin}
+					/>
+
 					<EnvironmentalParametersSection
 						className="reproduction-section"
 						basinCategory="REPRODUCTION"
+						basinId={selectedBasinId}
 					/>
 
-					<section className="reproduction-section" id="basin-plan">
-						<div className="reproduction-section-heading">
-							<SectionHeading title="Historique des lots de reproduction" />
-							<label className="reproduction-control">
-								<span>Filtrer par bassin</span>
-								<select
-									value={selectedBasin}
-									onChange={(event) => setSelectedBasin(event.target.value)}
-								>
-									<option value="all">Tous les bassins</option>
-									{basins.map((basin) => (
-										<option value={basin.id} key={basin.id}>{basin.reference}</option>
-									))}
-								</select>
-							</label>
+					<section className="reproduction-section" id="basin-plan" aria-label="Historique des lots de reproduction">
+						<SectionHeading title="Historique des lots de reproduction" />
+						<div className="list-content">
+						<div className="list-toolbar">
+							<ListSearch
+								value={lotSearch}
+								onChange={setLotSearch}
+								placeholder="Référence, espèce, date, quantité, statut..."
+								label={`Rechercher dans les lots de reproduction du bassin ${basinReference}`}
+							/>
+							<span className="list-result-count" aria-live="polite">
+								{filteredReproductions.length} lot{filteredReproductions.length > 1 ? "s" : ""}
+							</span>
 						</div>
 						{isLoading ? (
 							<p className="list-empty-state" role="status">Chargement des reproductions...</p>
 						) : filteredReproductions.length > 0 ? (
 							<DataTable
 								className="reproduction-table"
-								headers={["Référence", "Bassin", "Espèce", "Date d'ajout", "Qté mâles", "Qté femelles", "Statut"]}
+								headers={["Référence", "Espèce", "Date d'ajout", "Qté mâles", "Qté femelles", "Statut"]}
 								rows={visibleReproductions.map((reproduction) => [
 									<strong key={`${reproduction.id}-reference`}>{reproduction.reference}</strong>,
-									basinById.get(reproduction.bassin)?.reference ?? "—",
-									reproduction.espece === "CARPE" ? "Carpe" : "Tilapia",
-									new Date(`${reproduction.date_ajout}T00:00:00`).toLocaleDateString("fr-FR"),
+									speciesLabel(reproduction.espece),
+									formatDate(reproduction.date_ajout),
 									reproduction.quantite_male.toLocaleString("fr-FR"),
 									reproduction.quantite_femelle.toLocaleString("fr-FR"),
 									reproduction.statut === "ACTIF" ? "Actif" : "Inactif",
 								])}
 							/>
 						) : !loadError ? (
-							<p className="list-empty-state">Aucune reproduction enregistrée pour ce bassin.</p>
+							<p className="list-empty-state">
+								{debouncedLotSearch.trim()
+									? "Aucun lot ne correspond à cette recherche."
+									: "Aucune reproduction enregistrée pour ce bassin."}
+							</p>
 						) : null}
 						<Pagination
 							currentPage={currentPage}
@@ -276,56 +358,55 @@ export function ReproductionDashboard() {
 							endItem={endItem}
 							onPageChange={goToPage}
 						/>
+						</div>
 					</section>
 
-					<section className="reproduction-section" id="egg-history">
-						<div className="reproduction-section-heading">
-							<SectionHeading title={`Historique des pontes · ${historyRange} dernières pontes`} />
-							<label className="reproduction-control reproduction-period-control">
-								<span>Période</span>
-								<select
-									value={historyRange}
-									onChange={(event) => setHistoryRange(Number(event.target.value) as HistoryRange)}
-								>
-									<option value={5}>5 pontes</option>
-									<option value={10}>10 pontes</option>
-								</select>
-							</label>
+					<section className="reproduction-section" id="egg-history" aria-label="Historique des pontes">
+						<SectionHeading title={`Historique des pontes · ${historyRange} dernières pontes`} />
+						<div className="list-content">
+						<div className="list-toolbar">
+							<ListSearch
+								value={ponteSearch}
+								onChange={setPonteSearch}
+								placeholder="Référence, lot, date, quantité d'œufs..."
+								label={`Rechercher dans les pontes du bassin ${basinReference}`}
+							/>
+							<span className="list-result-count" aria-live="polite">
+								{filteredPontes.length} ponte{filteredPontes.length > 1 ? "s" : ""}
+							</span>
 						</div>
 						{isLoading ? (
 							<p className="list-empty-state" role="status">Chargement de l&apos;historique des pontes...</p>
 						) : historyPontes.length > 0 ? (
-							<>
-								<EggHistoryChart pontes={historyPontes} />
-								<DataTable
-									className="reproduction-table"
-									headers={["Référence ponte", "Reproduction", "Bassin", "Date de ponte", "Quantité d'œufs obtenus", "Observation"]}
-									rows={[...historyPontes].reverse().map((ponte) => {
-										const reproduction = reproductionById.get(ponte.reproduction);
-										return [
-											<strong key={`${ponte.id}-reference`}>{ponte.reference}</strong>,
-											reproduction?.reference ?? "—",
-											reproduction ? basinById.get(reproduction.bassin)?.reference ?? "—" : "—",
-											new Date(`${ponte.date_ponte}T00:00:00`).toLocaleDateString("fr-FR"),
-											Number(ponte.quantite_oeuf_obtenu).toLocaleString("fr-FR"),
-											ponte.observation || "—",
-										];
-									})}
-								/>
-							</>
+							<DataTable
+								className="reproduction-table"
+								headers={["Référence ponte", "Lot de reproduction", "Date de ponte", "Quantité d'œufs obtenus", "Observation"]}
+								rows={[...historyPontes].reverse().map((ponte) => [
+									<strong key={`${ponte.id}-reference`}>{ponte.reference}</strong>,
+									reproductionById.get(ponte.reproduction)?.reference ?? "—",
+									formatDate(ponte.date_ponte),
+									Number(ponte.quantite_oeuf_obtenu).toLocaleString("fr-FR"),
+									ponte.observation || "—",
+								])}
+							/>
 						) : !loadError ? (
-							<p className="list-empty-state">Aucune ponte enregistrée pour ce bassin.</p>
+							<p className="list-empty-state">
+								{debouncedPonteSearch.trim()
+									? "Aucune ponte ne correspond à cette recherche."
+									: "Aucune ponte enregistrée pour ce bassin."}
+							</p>
 						) : null}
+						</div>
 					</section>
 
 					<nav className="reproduction-actions" aria-label="Actions de reproduction">
-						<Button variant="ghost" href="/environnement/new">+ Paramètre environnemental</Button>
 						<button
 							className="button button-ghost"
 							type="button"
 							disabled={isLoading || availableBasins.length === 0}
 							onClick={() => {
 								setLotError("");
+								setLotFieldErrors({});
 								setIsPonteFormOpen(false);
 								setIsLotFormOpen(true);
 							}}
@@ -353,46 +434,6 @@ export function ReproductionDashboard() {
 					)}
 				</>
 			)}
-		</div>
-	);
-}
-
-function EggHistoryChart({ pontes }: { pontes: PonteRecord[] }) {
-	const values = pontes.map((ponte) => Number(ponte.quantite_oeuf_obtenu));
-	const maximum = Math.max(...values, 1);
-	const points = values.map((value, index) => ({
-		x: 36 + (index * 588) / Math.max(values.length - 1, 1),
-		y: 132 - (value / maximum) * 96,
-		date: new Date(`${pontes[index].date_ponte}T00:00:00`).toLocaleDateString("fr-FR", {
-			day: "2-digit",
-			month: "2-digit",
-		}),
-		value,
-	}));
-	const pointList = points.map((point) => `${point.x},${point.y}`).join(" ");
-
-	return (
-		<div className="reproduction-chart-wrap">
-			<svg
-				className="reproduction-chart"
-				viewBox="0 0 660 172"
-				role="img"
-				aria-label={`Quantité d'œufs par ponte sur ${pontes.length} dernières pontes`}
-				preserveAspectRatio="none"
-			>
-				{[24, 60, 96, 132].map((position) => (
-					<line key={position} x1="32" x2="628" y1={position} y2={position} />
-				))}
-				<polyline points={pointList} />
-				{points.map((point, index) => (
-					<g key={pontes[index].id}>
-						<circle cx={point.x} cy={point.y} r="3.5">
-							<title>{`${point.value.toLocaleString("fr-FR")} œufs, ${point.date}`}</title>
-						</circle>
-						<text x={point.x} y="162" textAnchor="middle">{point.date}</text>
-					</g>
-				))}
-			</svg>
 		</div>
 	);
 }

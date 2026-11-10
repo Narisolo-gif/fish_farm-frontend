@@ -9,6 +9,7 @@ import type {
 export function PonteForm({
 	reproductions,
 	basinReferences,
+	defaultReproductionId,
 	isSubmitting,
 	error,
 	onCancel,
@@ -16,12 +17,17 @@ export function PonteForm({
 }: {
 	reproductions: ReproductionRecord[];
 	basinReferences: Record<number, string>;
+	defaultReproductionId?: number;
 	isSubmitting: boolean;
 	error: string;
 	onCancel: () => void;
 	onSubmit: (ponte: PonteInput) => void;
 }) {
-	const [reproductionId, setReproductionId] = useState("");
+	const [reproductionId, setReproductionId] = useState(
+		defaultReproductionId !== undefined && reproductions.some((item) => item.id === defaultReproductionId)
+			? String(defaultReproductionId)
+			: "",
+	);
 	const [eggQuantity, setEggQuantity] = useState("");
 	const [observation, setObservation] = useState("");
 	const [reference, setReference] = useState("");
