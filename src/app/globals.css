@@ -394,6 +394,120 @@ button {
     text-align: center
 }
 
+/* Les actions restent toujours sur une ligne ; c'est la table qui défile horizontalement. */
+.lot-actions {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 6px
+}
+
+.button.icon-button {
+    display: inline-grid;
+    flex: 0 0 auto;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    padding: 0
+}
+
+.lots-section {
+    min-width: 0
+}
+
+.lot-effectif-note {
+    margin: -10px 0 24px
+}
+
+.lots-table table {
+    min-width: 900px
+}
+
+.lots-table th:last-child,
+.lots-table td:last-child {
+    width: 1%;
+    white-space: nowrap
+}
+
+.lot-section-title {
+    margin: 0 0 12px;
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-transform: uppercase
+}
+
+.lot-stepper-section {
+    margin-bottom: 24px;
+    padding: 16px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: var(--surface)
+}
+
+.lot-stepper {
+    display: flex;
+    gap: 8px;
+    margin: 0 0 12px;
+    padding: 0;
+    list-style: none;
+    overflow-x: auto
+}
+
+.lot-step {
+    position: relative;
+    display: flex;
+    flex: 1 1 0;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    min-width: 90px;
+    color: var(--muted);
+    font-size: 12px;
+    text-align: center
+}
+
+.lot-step:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    top: 14px;
+    left: calc(50% + 18px);
+    right: calc(-50% + 14px);
+    height: 2px;
+    background: var(--line)
+}
+
+.lot-step.is-done:not(:last-child)::after {
+    background: var(--teal)
+}
+
+.lot-step-marker {
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    border: 2px solid var(--line);
+    border-radius: 50%;
+    background: var(--surface);
+    font-weight: 700
+}
+
+.lot-step.is-done .lot-step-marker {
+    border-color: var(--teal);
+    background: var(--teal);
+    color: #fff
+}
+
+.lot-step.is-current .lot-step-marker {
+    border-color: var(--teal-dark);
+    color: var(--teal-dark)
+}
+
+.lot-step.is-current .lot-step-label {
+    color: var(--teal-dark);
+    font-weight: 700
+}
+
 @media (max-width: 600px) {
     .lot-detail-header {
         align-items: flex-start;

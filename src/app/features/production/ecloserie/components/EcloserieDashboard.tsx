@@ -18,8 +18,10 @@ import type {
 	ReproductionRecord,
 } from "@/app/features/production/reproduction/types/reproduction.types";
 import type { EnvironmentalBasin } from "@/app/features/production/shared/environnement/types/environment.types";
+import type { LotRecord } from "@/app/features/production/lots/types/lot.types";
 import { apiRequest } from "@/lib/apiClient";
 import { matchesSearch } from "@/lib/search";
+import Link from "next/link";
 
 const rowsPerPage = 10;
 
@@ -34,6 +36,7 @@ export function EcloserieDashboard() {
 	const [reproductions, setReproductions] = useState<ReproductionRecord[]>([]);
 	const [pontes, setPontes] = useState<PonteRecord[]>([]);
 	const [eclosions, setEclosions] = useState<ApiEclosionRecord[]>([]);
+	const [lots, setLots] = useState<LotRecord[]>([]);
 	const [selectedBasinId, setSelectedBasinId] = useState<number | null>(null);
 	const [isLoadingHistory, setIsLoadingHistory] = useState(true);
 	const [historyError, setHistoryError] = useState("");
@@ -55,11 +58,12 @@ export function EcloserieDashboard() {
 
 			try {
 				const headers = { Authorization: `Bearer ${accessToken}` };
-				const [basinsResponse, reproductionsResponse, pontesResponse, eclosionsResponse] = await Promise.all([
+				const [basinsResponse, reproductionsResponse, pontesResponse, eclosionsResponse, lotsResponse] = await Promise.all([
 					apiRequest<ApiListResponse<EnvironmentalBasin>>("/api/v1/bassins/?categorie=REPRODUCTION", { headers }),
 					apiRequest<ApiListResponse<ReproductionRecord>>("/api/v1/reproduction/reproductions/", { headers }),
 					apiRequest<ApiListResponse<PonteRecord>>("/api/v1/reproduction/pontes/", { headers }),
 					apiRequest<ApiListResponse<ApiEclosionRecord>>("/api/v1/ecloserie/", { headers }),
+					apiRequest<ApiListResponse<LotRecord>>("/api/v1/lots/", { headers }),
 				]);
 				if (isActive) {
 					const loadedBasins = getResults(basinsResponse);
@@ -67,6 +71,7 @@ export function EcloserieDashboard() {
 					setReproductions(getResults(reproductionsResponse));
 					setPontes(getResults(pontesResponse));
 					setEclosions(getResults(eclosionsResponse));
+					setLots(getResults(lotsResponse));
 					// Bassins triés par date de création décroissante : le plus récent par défaut.
 					setSelectedBasinId(loadedBasins[0]?.id ?? null);
 				}
@@ -96,7 +101,11 @@ export function EcloserieDashboard() {
 		const reproductionBasin = new Map(reproductions.map((reproduction) => [reproduction.id, reproduction.bassin]));
 		return new Map(pontes.map((ponte) => [ponte.reference, reproductionBasin.get(ponte.reproduction)]));
 	}, [pontes, reproductions]);
-	const basinReproductions = reproductions.filter((reproduction) => reproduction.bassin === selectedBasinId);
+	const lotByEclosionReference = useMemo(
+		() => new Map(lots.map((lot) => [lot.reference_eclosion, lot])),
+		[lots],
+	);
+	const basinReproductions =reproductions.filter((reproduction) => reproduction.bassin === selectedBasinId);
 	const currentLot = getCurrentLot(basinReproductions);
 	const basinEclosions = eclosions.filter(
 		(eclosion) => basinIdByPonteReference.get(eclosion.reference_ponte) === selectedBasinId,
@@ -166,8 +175,10 @@ export function EcloserieDashboard() {
 					) : visibleEclosions.length > 0 ? (
 						<DataTable
 							className="ecloserie-table"
-							headers={["Référence", "Référence ponte", "Date d’éclosion", "Quantité d’alevins obtenus", "Quantité d’œufs éclos", "Observation"]}
-							rows={visibleEclosions.map((eclosion) => [
+							headers={["Référence", "Référence ponte", "Date d’éclosion", "Quantité d’alevins obtenus", "Quantité d’œufs éclos", "Observation", "Lot"]}
+							rows={visibleEclosions.map((eclosion) => {
+								const lot = lotByEclosionReference.get(eclosion.reference);
+								return [
 								<strong key={`${eclosion.id}-reference`}>{eclosion.reference}</strong>,
 								eclosion.reference_ponte,
 								new Date(`${eclosion.date_eclosion}T00:00:00`).toLocaleDateString("fr-FR"),
@@ -176,7 +187,17 @@ export function EcloserieDashboard() {
 									? "—"
 									: Number(eclosion.quantite_oeufs_eclos).toLocaleString("fr-FR"),
 								eclosion.observation || "—",
-							])}
+								lot ? (
+									<Link key={`${eclosion.id}-lot`} href={`/production/lots/${lot.id}`}>{lot.reference}</Link>
+								) : eclosion.statut === undefined || eclosion.statut === "ACTIF" ? (
+									<Link key={`${eclosion.id}-lot`} href={`/production/lots/new?eclosion=${eclosion.id}`}>
+										Créer le lot
+									</Link>
+								) : (
+									"—"
+								),
+							];
+							})}
 						/>
 					) : (
 						<p className="list-empty-state">

@@ -15,6 +15,7 @@ export type ApiEclosionRecord = {
 	quantite_oeufs_eclos: number | string | null;
 	quantite_alevins_obtenu: number;
 	observation: string | null;
+	statut?: "ACTIF" | "INACTIF" | string;
 };
 
 export function isEclosionRecord(value: unknown): value is EclosionRecord {
