@@ -4,8 +4,10 @@ export type StockHapa = {
 	id_hapa: number;
 	nom_hapa: string;
 	effectif_entrant: number;
-	finalite: string | null;
 };
+
+/** `MiseEnStock.Finalite` : obligatoire à la création, non modifiable ensuite. */
+export type FinaliteStock = "GROSSISSEMENT" | "VENTE";
 
 export type StockRecord = {
 	id: number;
@@ -13,6 +15,7 @@ export type StockRecord = {
 	reference_lot: string;
 	id_bassin: number;
 	reference_bassin: string;
+	finalite: FinaliteStock | null;
 	hapas: StockHapa[];
 	effectif_entrant: number;
 	ecart_effectif: number | null;
@@ -70,6 +73,12 @@ export async function getStockHistory() {
 	);
 }
 
+/** Mise en stock d'un lot (au plus une par lot) ; l'API ne filtre pas par lot. */
+export async function getMiseEnStockDuLot(lotId: number) {
+	const stocks = await getStockHistory();
+	return stocks.find((stock) => stock.id_lot === lotId) ?? null;
+}
+
 export async function getStockDetail(stockId: string) {
 	return apiRequest<StockRecord>(
 		`/api/v1/stocks/${encodeURIComponent(stockId)}/`,
@@ -100,6 +109,7 @@ export async function getStockFormOptions() {
 export async function createStock(payload: {
 	id_lot: number;
 	id_bassin: number;
+	finalite: FinaliteStock;
 	effectif_entrant?: number;
 	hapas?: { id_hapa: number; effectif_entrant: number }[];
 	justification_ecart: string;

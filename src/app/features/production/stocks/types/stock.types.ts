@@ -6,4 +6,4 @@ export type StockFeature =
 	| "cloture"
 	| "historique-sortie";
 
-export type StockSection = Exclude<StockFeature, "plan">;
+export type StockSection = StockFeature;

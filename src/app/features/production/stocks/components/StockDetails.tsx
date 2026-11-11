@@ -15,9 +15,20 @@ const MortalitePerteJournal = dynamic(
     { loading: () => <p className="treatment-section-loading" role="status">Chargement de la mortalité...</p> },
 );
 
-const ProvendeSection = dynamic(
-    () => import("@/app/features/production/traitement/components/ProvendeSection").then((module) => module.ProvendeSection),
+const ConsommationProvendeJournal = dynamic(
+    () =>
+        import("@/app/features/production/shared/provende-ui/components/ConsommationProvendeJournal").then(
+            (module) => module.ConsommationProvendeJournal,
+        ),
     { loading: () => <p className="treatment-section-loading" role="status">Chargement de la provende...</p> },
+);
+
+const PlanHapasSection = dynamic(
+    () =>
+        import("@/app/features/production/shared/plan-ui/components/PlanHapasSection").then(
+            (module) => module.PlanHapasSection,
+        ),
+    { loading: () => <p className="treatment-section-loading" role="status">Chargement du plan...</p> },
 );
 
 const ParamEnvSection = dynamic(
@@ -42,6 +53,8 @@ export function StockDetail({ lotStockageId }: { lotStockageId: string }) {
     const [stock, setStock] = useState<StockRecord | null>(null);
     const [lotStade, setLotStade] = useState<string | null>(null);
     const [stockError, setStockError] = useState("");
+    // Incrémenté après une validation / annulation de sortie : le stade du lot a pu changer.
+    const [reloadKey, setReloadKey] = useState(0);
 
     useEffect(() => {
         let isActive = true;
@@ -67,7 +80,7 @@ export function StockDetail({ lotStockageId }: { lotStockageId: string }) {
         return () => {
             isActive = false;
         };
-    }, [lotStockageId]);
+    }, [lotStockageId, reloadKey]);
 
     // Une fois la sortie de stock validée, le lot quitte le stade EN_STOCK : le journal passe en lecture seule.
     const isStockReadOnly = isClosed || (lotStade !== null && lotStade !== "EN_STOCK");
@@ -106,7 +119,35 @@ export function StockDetail({ lotStockageId }: { lotStockageId: string }) {
             )}
             {visitedSections.includes("provende") && (
                 <div hidden={activeSection !== "provende"}>
-                    <ProvendeSection />
+                    {stockError ? (
+                        <p className="form-error" role="alert">{stockError}</p>
+                    ) : stock ? (
+                        <ConsommationProvendeJournal
+                            bassinId={stock.id_bassin}
+                            bassinCategorie="STOCKS"
+                            hapas={stock.hapas.map((hapa) => ({ id: hapa.id_hapa, nom: hapa.nom_hapa }))}
+                            restrictToHapas
+                            dateMin={stock.date_mise_en_stock.slice(0, 10)}
+                        />
+                    ) : (
+                        <p className="treatment-section-loading" role="status">Chargement de la provende...</p>
+                    )}
+                </div>
+            )}
+            {/* Monté à chaque ouverture : l'effectif reflète les saisies faites dans les autres onglets. */}
+            {activeSection === "plan" && (
+                <div>
+                    {stockError ? (
+                        <p className="form-error" role="alert">{stockError}</p>
+                    ) : stock ? (
+                        <PlanHapasSection
+                            bassinId={stock.id_bassin}
+                            lotId={stock.id_lot}
+                            hapas={stock.hapas.map((hapa) => ({ id: hapa.id_hapa, nom: hapa.nom_hapa }))}
+                        />
+                    ) : (
+                        <p className="treatment-section-loading" role="status">Chargement du plan...</p>
+                    )}
                 </div>
             )}
             {visitedSections.includes("environnement") && (
@@ -125,7 +166,20 @@ export function StockDetail({ lotStockageId }: { lotStockageId: string }) {
             )}
             {visitedSections.includes("historique-sortie") && (
                 <div hidden={activeSection !== "historique-sortie"}>
-                    <StockExitHistorySection />
+                    {stockError ? (
+                        <p className="form-error" role="alert">{stockError}</p>
+                    ) : stock ? (
+                        <StockExitHistorySection
+                            lotId={stock.id_lot}
+                            dateMiseEnStock={stock.date_mise_en_stock}
+                            finalite={stock.finalite}
+                            lotStade={lotStade}
+                            isClosed={isClosed}
+                            onLotChanged={() => setReloadKey((key) => key + 1)}
+                        />
+                    ) : (
+                        <p className="treatment-section-loading" role="status">Chargement de l&apos;historique de sortie...</p>
+                    )}
                 </div>
             )}
         </div>

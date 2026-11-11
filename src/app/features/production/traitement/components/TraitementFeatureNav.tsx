@@ -6,6 +6,7 @@ const features: { id: TraitementFeature; label: string }[] = [
 	{ id: "plan", label: "Plan" },
 	{ id: "environnement", label: "Paramètre env." },
 	{ id: "cloture", label: "Clôturer" },
+	{ id: "historique-sortie", label: "Historique de sortie" },
 ];
 
 export function TraitementFeatureNav({
@@ -18,7 +19,6 @@ export function TraitementFeatureNav({
 	return (
 		<nav className="treatment-feature-nav" aria-label="Fonctionnalités du traitement">
 			{features.map((feature) => {
-				const isImplemented = feature.id !== "plan";
 				const isActive = feature.id === activeFeature;
 
 				return (
@@ -27,13 +27,7 @@ export function TraitementFeatureNav({
 						type="button"
 						className={`treatment-feature-button${isActive ? " is-active" : ""}`}
 						aria-current={isActive ? "page" : undefined}
-						aria-label={isImplemented ? feature.label : `${feature.label}, fonctionnalité à venir`}
-						disabled={!isImplemented}
-						onClick={() => {
-							if (feature.id !== "plan") {
-								onSelect(feature.id);
-							}
-						}}
+						onClick={() => onSelect(feature.id)}
 					>
 						{feature.label}
 					</button>

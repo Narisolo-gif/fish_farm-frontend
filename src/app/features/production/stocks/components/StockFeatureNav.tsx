@@ -19,7 +19,6 @@ export function StockFeatureNav({
     return (
         <nav className="stock-feature-nav" aria-label="Sections du stock">
             {features.map((feature) => {
-                const isImplemented = feature.id !== "plan";
                 const isActive = feature.id === activeFeature;
 
                 return (
@@ -28,13 +27,7 @@ export function StockFeatureNav({
                         type="button"
                         className={`stock-feature-button${isActive ? " is-active" : ""}`}
                         aria-current={isActive ? "page" : undefined}
-                        aria-label={isImplemented ? feature.label : `${feature.label}, fonctionnalité à venir`}
-                        disabled={!isImplemented}
-                        onClick={() => {
-                            if (feature.id !== "plan") {
-                                onSelect(feature.id);
-                            }
-                        }}
+                        onClick={() => onSelect(feature.id)}
                     >
                         {feature.label}
                     </button>

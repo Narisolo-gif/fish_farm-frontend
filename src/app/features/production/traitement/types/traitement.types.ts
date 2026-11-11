@@ -3,9 +3,10 @@ export type TraitementFeature =
 	| "provende"
 	| "plan"
 	| "environnement"
-	| "cloture";
+	| "cloture"
+	| "historique-sortie";
 
-export type TraitementSection = Extract<TraitementFeature, "mortalite" | "provende" | "environnement" | "cloture">;
+export type TraitementSection = TraitementFeature;
 
 export type TraitementDetailData = {
 	id: number;

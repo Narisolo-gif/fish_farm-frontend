@@ -18,8 +18,11 @@ const MortalitePerteJournal = dynamic(
   { loading: () => <p className="treatment-section-loading" role="status">Chargement de la mortalité...</p> },
 );
 
-const ProvendeSection = dynamic(
-  () => import("@/app/features/production/traitement/components/ProvendeSection").then((module) => module.ProvendeSection),
+const ConsommationProvendeJournal = dynamic(
+  () =>
+    import("@/app/features/production/shared/provende-ui/components/ConsommationProvendeJournal").then(
+      (module) => module.ConsommationProvendeJournal,
+    ),
   { loading: () => <p className="treatment-section-loading" role="status">Chargement de la provende...</p> },
 );
 
@@ -113,7 +116,21 @@ export function GrossissementDetail({ grossissementId }: { grossissementId?: str
       )}
       {visitedSections.includes("provende") && (
         <div hidden={activeSection !== "provende"}>
-          <ProvendeSection />
+          {lot ? (
+            <ConsommationProvendeJournal
+              bassinId={lot.id_bassin}
+              bassinCategorie="GROSSISSEMENT"
+              dateMin={lot.date_mise_en_place.slice(0, 10)}
+              typesAutorises={["DEMARRAGE", "CROISSANCE", "FINITION"]}
+            />
+          ) : isLoadingLot ? (
+            <p className="treatment-section-loading" role="status">Chargement de la provende...</p>
+          ) : !grossissementId ? (
+            <p className="list-empty-state">
+              Ouvrez un lot depuis l&apos;<Link href="/production/grossissement/historique">historique des grossissements</Link>{" "}
+              pour suivre sa consommation de provende.
+            </p>
+          ) : null}
         </div>
       )}
       {visitedSections.includes("environnement") && (

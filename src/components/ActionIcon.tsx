@@ -31,6 +31,7 @@ const ICON_PATHS = {
 			<path d="M5.6 5.6l12.8 12.8" />
 		</>
 	),
+	validate: <path d="M5 12.5l4.5 4.5L19 7.5" />,
 };
 
 export type ActionIconName = keyof typeof ICON_PATHS;

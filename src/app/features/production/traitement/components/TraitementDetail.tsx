@@ -17,8 +17,11 @@ const MortalitePerteJournal = dynamic(
 	{ loading: () => <p className="treatment-section-loading" role="status">Chargement de la mortalité...</p> },
 );
 
-const ProvendeSection = dynamic(
-	() => import("@/app/features/production/traitement/components/ProvendeSection").then((module) => module.ProvendeSection),
+const ConsommationProvendeJournal = dynamic(
+	() =>
+		import("@/app/features/production/shared/provende-ui/components/ConsommationProvendeJournal").then(
+			(module) => module.ConsommationProvendeJournal,
+		),
 	{ loading: () => <p className="treatment-section-loading" role="status">Chargement de la provende...</p> },
 );
 
@@ -30,6 +33,22 @@ const ParamEnvSection = dynamic(
 const ClotureSection = dynamic(
 	() => import("@/app/features/production/traitement/components/ClotureSection").then((module) => module.ClotureSection),
 	{ loading: () => <p className="treatment-section-loading" role="status">Chargement du récapitulatif...</p> },
+);
+
+const PlanHapasSection = dynamic(
+	() =>
+		import("@/app/features/production/shared/plan-ui/components/PlanHapasSection").then(
+			(module) => module.PlanHapasSection,
+		),
+	{ loading: () => <p className="treatment-section-loading" role="status">Chargement du plan...</p> },
+);
+
+const TraitementSortieHistorySection = dynamic(
+	() =>
+		import("@/app/features/production/traitement/components/TraitementSortieHistorySection").then(
+			(module) => module.TraitementSortieHistorySection,
+		),
+	{ loading: () => <p className="treatment-section-loading" role="status">Chargement de l&apos;historique de sortie...</p> },
 );
 
 export function TraitementDetail({ traitementId }: { traitementId: string }) {
@@ -122,7 +141,32 @@ export function TraitementDetail({ traitementId }: { traitementId: string }) {
 			)}
 			{visitedSections.includes("provende") && (
 				<div hidden={activeSection !== "provende"}>
-					<ProvendeSection />
+					{traitementDetail ? (
+						<ConsommationProvendeJournal
+							bassinId={traitementDetail.id_bassin}
+							bassinCategorie="TRAITEMENT"
+							hapas={traitementDetail.hapas.map((hapa) => ({ id: hapa.id_hapa, nom: hapa.nom_hapa }))}
+							restrictToHapas
+							dateMin={traitementDetail.date_ouverture.slice(0, 10)}
+							typesAutorises={["TRAITEMENT"]}
+						/>
+					) : isLoadingDetail ? (
+						<p className="treatment-section-loading" role="status">Chargement de la provende...</p>
+					) : null}
+				</div>
+			)}
+			{/* Monté à chaque ouverture : l'effectif reflète les saisies faites dans les autres onglets. */}
+			{activeSection === "plan" && (
+				<div>
+					{traitementDetail ? (
+						<PlanHapasSection
+							bassinId={traitementDetail.id_bassin}
+							lotId={traitementDetail.id_lot}
+							hapas={traitementDetail.hapas.map((hapa) => ({ id: hapa.id_hapa, nom: hapa.nom_hapa }))}
+						/>
+					) : isLoadingDetail ? (
+						<p className="treatment-section-loading" role="status">Chargement du plan...</p>
+					) : null}
 				</div>
 			)}
 			{visitedSections.includes("environnement") && (
@@ -137,6 +181,15 @@ export function TraitementDetail({ traitementId }: { traitementId: string }) {
 						isClosed={isClosed}
 						onClose={() => setIsClosed(true)}
 					/>
+				</div>
+			)}
+			{visitedSections.includes("historique-sortie") && (
+				<div hidden={activeSection !== "historique-sortie"}>
+					{traitementDetail ? (
+						<TraitementSortieHistorySection traitement={traitementDetail} isClosed={isClosed} />
+					) : isLoadingDetail ? (
+						<p className="treatment-section-loading" role="status">Chargement de l&apos;historique de sortie...</p>
+					) : null}
 				</div>
 			)}
 		</div>

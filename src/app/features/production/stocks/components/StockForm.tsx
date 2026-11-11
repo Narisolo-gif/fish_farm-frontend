@@ -6,19 +6,21 @@ import { Button } from "@/components/ui";
 import {
 	createStock,
 	getStockFormOptions,
+	type FinaliteStock,
 	type StockBassin,
 	type StockLot,
 	type StockTreatment,
 } from "@/app/features/production/stocks/services/stockApi";
 
-export function StockForm() {
+export function StockForm({ initialLotId }: { initialLotId?: string } = {}) {
     const router = useRouter();
     const [lots, setLots] = useState<StockLot[]>([]);
     const [basins, setBasins] = useState<StockBassin[]>([]);
     const [treatments, setTreatments] = useState<StockTreatment[]>([]);
     const [isLoading, setIsLoading] = useState(true);
-    const [lotId, setLotId] = useState("");
+    const [lotId, setLotId] = useState(initialLotId ?? "");
     const [basinId, setBasinId] = useState("");
+    const [finalite, setFinalite] = useState<FinaliteStock | "">("");
     const [effectifEntrant, setEffectifEntrant] = useState("");
     const [hapaEffectifs, setHapaEffectifs] = useState<Record<number, string>>({});
     const [justification, setJustification] = useState("");
@@ -97,6 +99,10 @@ export function StockForm() {
             setError("Sélectionnez un lot et un bassin de stock actifs.");
             return;
         }
+        if (!finalite) {
+            setError("La finalité est obligatoire à la création.");
+            return;
+        }
         if (!Number.isInteger(totalQuantity) || totalQuantity <= 0) {
             setError("L'effectif entrant doit être un nombre entier strictement positif.");
             return;
@@ -136,6 +142,7 @@ export function StockForm() {
         void createStock({
             id_lot: selectedLot.id,
             id_bassin: selectedBasin.id,
+            finalite,
             ...(activeHapas.length > 0
                 ? { hapas: hapaLines }
                 : { effectif_entrant: totalQuantity }),
@@ -196,6 +203,18 @@ export function StockForm() {
                                 {basins.map((basin) => (
                                     <option key={basin.id} value={basin.id}>{basin.reference}</option>
                                 ))}
+                            </select>
+                        </label>
+                        <label>
+                            Finalité
+                            <select
+                                value={finalite}
+                                onChange={(event) => setFinalite(event.target.value as FinaliteStock)}
+                                required
+                            >
+                                <option value="" disabled>Sélectionner la finalité</option>
+                                <option value="GROSSISSEMENT">Grossissement</option>
+                                <option value="VENTE">Vente</option>
                             </select>
                         </label>
                         <label>
