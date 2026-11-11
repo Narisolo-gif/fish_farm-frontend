@@ -9,8 +9,11 @@ import type {
 } from "@/app/features/production/traitement/types/traitement.types";
 import { apiRequest } from "@/lib/apiClient";
 
-const MortaliteSection = dynamic(
-	() => import("@/app/features/production/traitement/components/MortaliteSection").then((module) => module.MortaliteSection),
+const MortalitePerteJournal = dynamic(
+	() =>
+		import("@/app/features/production/shared/mortalite-ui/components/MortalitePerteJournal").then(
+			(module) => module.MortalitePerteJournal,
+		),
 	{ loading: () => <p className="treatment-section-loading" role="status">Chargement de la mortalité...</p> },
 );
 
@@ -102,7 +105,19 @@ export function TraitementDetail({ traitementId }: { traitementId: string }) {
 			{detailError && <p role="alert">{detailError}</p>}
 			{visitedSections.includes("mortalite") && (
 				<div hidden={activeSection !== "mortalite"}>
-					<MortaliteSection />
+					{traitementDetail ? (
+						<MortalitePerteJournal
+							bassinId={traitementDetail.id_bassin}
+							bassinCategorie="TRAITEMENT"
+							hapas={traitementDetail.hapas.map((hapa) => ({ id: hapa.id_hapa, nom: hapa.nom_hapa }))}
+							restrictToHapas
+							dateMin={traitementDetail.date_ouverture.slice(0, 10)}
+							readOnly={isClosed}
+							readOnlyReason="Traitement clôturé : les hapas sont bloqués, les écarts se justifient à la mise en stock."
+						/>
+					) : isLoadingDetail ? (
+						<p className="treatment-section-loading" role="status">Chargement de la mortalité...</p>
+					) : null}
 				</div>
 			)}
 			{visitedSections.includes("provende") && (

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { DetailIconLink } from "@/components/DetailIconLink";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui";
 import { DataTable } from "@/components/DataTable";
@@ -148,8 +149,8 @@ export default function TraitementsPage() {
 					<section className="ecloserie-section" aria-label="Liste des traitements">
 						{visibleTraitements.length > 0 ? (
 							<DataTable
-								className="ecloserie-table"
-								headers={["Traitement", "Lot", "Bassin", "Provende", "Statut", "Ouvert le", "Clôturé le"]}
+								className="ecloserie-table table-with-actions"
+								headers={["Traitement", "Lot", "Bassin", "Provende", "Statut", "Ouvert le", "Clôturé le", "Actions"]}
 								rows={visibleTraitements.map((traitement) => [
 									<Link
 										key={`traitement-${traitement.id}`}
@@ -168,6 +169,11 @@ export default function TraitementsPage() {
 									</span>,
 									formatDate(traitement.date_ouverture),
 									formatDate(traitement.date_cloture),
+									<DetailIconLink
+										key={`actions-${traitement.id}`}
+										href={`/production/traitement/${traitement.id}`}
+										label={`Voir le détail du traitement #${traitement.id}`}
+									/>,
 								])}
 							/>
 						) : (

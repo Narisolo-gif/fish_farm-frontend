@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui";
 import { DataTable } from "@/components/DataTable";
+import { DetailIconLink } from "@/components/DetailIconLink";
 import { ListSearch } from "@/components/ListSearch";
 import { Pagination } from "@/components/Pagination";
 import { PageHeader } from "@/components/PageHeader";
@@ -130,14 +131,19 @@ export default function BassinsPage() {
 					<section className="ecloserie-section" aria-label="Liste des bassins">
 						{visibleBassins.length > 0 ? (
 							<DataTable
-								className="ecloserie-table"
-								headers={["Référence", "Catégorie", "Capacité", "Nombre d'hapas", "Statut"]}
+								className="ecloserie-table table-with-actions"
+								headers={["Référence", "Catégorie", "Capacité", "Nombre d'hapas", "Statut", "Actions"]}
 								rows={visibleBassins.map((bassin) => [
 									bassin.reference,
 									bassin.categorie,
 									bassin.capacity.toLocaleString("fr-FR"),
 									bassin.hapas.length.toLocaleString("fr-FR"),
 									bassin.statut,
+									<DetailIconLink
+										key={`bassin-${bassin.id}`}
+										href={`/bassins/${bassin.id}`}
+										label={`Voir les effectifs et mouvements du bassin ${bassin.reference}`}
+									/>,
 								])}
 							/>
 						) : (

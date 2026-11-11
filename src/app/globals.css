@@ -414,6 +414,47 @@ button {
     min-width: 0
 }
 
+.journal-filter {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 700
+}
+
+.journal-filter select {
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 8px 10px;
+    background: var(--surface);
+    color: var(--ink);
+    font: inherit;
+    font-weight: 400
+}
+
+.journal-table table {
+    min-width: 860px
+}
+
+.mouvements-table table {
+    min-width: 960px
+}
+
+.mouvement-plus {
+    color: #24764b
+}
+
+.mouvement-moins {
+    color: var(--red)
+}
+
+.bassin-mouvements {
+    display: grid;
+    gap: 16px;
+    min-width: 0
+}
+
 .lot-effectif-note {
     margin: -10px 0 24px
 }
@@ -422,8 +463,8 @@ button {
     min-width: 900px
 }
 
-.lots-table th:last-child,
-.lots-table td:last-child {
+.table-with-actions th:last-child,
+.table-with-actions td:last-child {
     width: 1%;
     white-space: nowrap
 }

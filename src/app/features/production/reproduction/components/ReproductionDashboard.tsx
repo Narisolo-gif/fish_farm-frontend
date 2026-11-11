@@ -14,6 +14,7 @@ import {
 	getCurrentLot,
 } from "@/app/features/production/reproduction/components/ReproductionBasinHeader";
 import { EnvironmentalParametersSection } from "@/app/features/production/shared/environnement/components/EnvironmentalParametersSection";
+import { MortalitePerteJournal } from "@/app/features/production/shared/mortalite-ui/components/MortalitePerteJournal";
 import { ApiError, type ApiFieldErrors, apiRequest } from "@/lib/apiClient";
 import { matchesSearch } from "@/lib/search";
 import type { EnvironmentalBasin } from "@/app/features/production/shared/environnement/types/environment.types";
@@ -313,6 +314,22 @@ export function ReproductionDashboard() {
 						basinCategory="REPRODUCTION"
 						basinId={selectedBasinId}
 					/>
+
+					{selectedBasin && (
+						<section className="reproduction-section" aria-label="Mortalité et pertes des géniteurs">
+							<MortalitePerteJournal
+								key={selectedBasin.id}
+								bassinId={selectedBasin.id}
+								bassinCategorie="REPRODUCTION"
+								hapas={(selectedBasin.hapas ?? [])
+									.filter((hapa) => hapa.actif)
+									.map((hapa) => ({ id: hapa.id, nom: hapa.nom }))}
+								title="Journal mortalité / perte des géniteurs"
+								readOnly={selectedBasin.statut !== "ACTIF"}
+								readOnlyReason="Bassin inactif : aucune saisie n'est possible."
+							/>
+						</section>
+					)}
 
 					<section className="reproduction-section" id="basin-plan" aria-label="Historique des lots de reproduction">
 						<SectionHeading title="Historique des lots de reproduction" />

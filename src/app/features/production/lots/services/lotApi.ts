@@ -5,8 +5,8 @@ import {
 	type LotEclosion,
 	type LotRecord,
 	type LotUpdatePayload,
-	type MouvementEffectif,
 } from "@/app/features/production/lots/types/lot.types";
+import type { MouvementEffectif } from "@/app/features/production/shared/mortalite-ui/types/mortalite.types";
 
 type ApiListResponse<T> = T[] | { results: T[] };
 

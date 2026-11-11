@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { DetailIconLink } from "@/components/DetailIconLink";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui";
 import { DataTable } from "@/components/DataTable";
@@ -107,8 +107,8 @@ export default function StocksPage() {
                         <section className="ecloserie-section" aria-label="Historique des stocks">
                             {visibleStocks.length > 0 ? (
                                 <DataTable
-                                    className="ecloserie-table"
-                                    headers={["Mise en stock", "Lot", "Bassin", "Hapas", "Effectif entrant", "Date", "Détails"]}
+                                    className="ecloserie-table table-with-actions"
+                                    headers={["Mise en stock", "Lot", "Bassin", "Hapas", "Effectif entrant", "Date", "Actions"]}
                                     rows={visibleStocks.map((stock) => [
                                         `#${stock.id}`,
                                         stock.reference_lot,
@@ -118,9 +118,11 @@ export default function StocksPage() {
                                             : "—",
                                         stock.effectif_entrant.toLocaleString("fr-FR"),
                                         formatDate(stock.date_mise_en_stock),
-                                        <Link key={`stock-${stock.id}`} href={`/production/stock/${stock.id}`}>
-                                            Voir le détail
-                                        </Link>,
+                                        <DetailIconLink
+                                            key={`stock-${stock.id}`}
+                                            href={`/production/stock/${stock.id}`}
+                                            label={`Voir le détail de la mise en stock #${stock.id}`}
+                                        />,
                                     ])}
                                 />
                             ) : (

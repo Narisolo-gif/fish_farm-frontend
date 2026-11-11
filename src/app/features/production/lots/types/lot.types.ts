@@ -1,4 +1,6 @@
-export type LotStade = "CREEE" | "EN_TRAITEMENT" | "EN_STOCK" | "EN_GROSSISSEMENT" | "CLOTUREE";
+import type { MouvementEffectif as SharedMouvementEffectif } from "@/app/features/production/shared/mortalite-ui/types/mortalite.types";
+
+export type LotStade ="CREEE" | "EN_TRAITEMENT" | "EN_STOCK" | "EN_GROSSISSEMENT" | "CLOTUREE";
 export type LotParcours = "TRAITEMENT_REQUIS" | "SANS_TRAITEMENT";
 export type LotEspece = "CARPE" | "TILAPIA";
 
@@ -27,22 +29,10 @@ export type LotEclosion = {
 	statut: "ACTIF" | "INACTIF" | string;
 };
 
-export type MouvementEffectif = {
-	id: number;
-	type_mouvement:
-		| "ENTREE"
-		| "SORTIE"
-		| "MORTALITE"
-		| "PERTE"
-		| "AJUSTEMENT_POSITIF"
-		| "VENTE"
-		| "ANNULATION"
-		| string;
-	sens: 1 | -1;
-	quantite: number;
-	lot_origine: number | null;
-	annule_mouvement: number | null;
-};
+type MouvementEffectif = Pick<
+	SharedMouvementEffectif,
+	"id" | "type_mouvement" | "sens" | "quantite" | "lot_origine" | "annule_mouvement"
+>;
 
 export type LotEffectif = {
 	/** Effectif vivant actuel selon le registre des mouvements (quantité initiale tant que le lot n'est pas placé). */

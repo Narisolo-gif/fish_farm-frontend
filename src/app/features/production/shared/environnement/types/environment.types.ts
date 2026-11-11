@@ -4,6 +4,7 @@ export type EnvironmentalBasin = {
 	categorie: "REPRODUCTION" | "ECLOSERIE" | "TRAITEMENT" | "STOCKS" | "GROSSISSEMENT";
 	capacity: number;
 	statut: string;
+	hapas?: { id: number; nom: string; actif: boolean }[];
 };
 
 export type EnvironmentalMeasurement = {

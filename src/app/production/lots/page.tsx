@@ -107,7 +107,7 @@ export default function LotsPage() {
 						<section className="ecloserie-section lots-section" aria-label="Historique des lots">
 							{visibleLots.length > 0 ? (
 								<DataTable
-									className="ecloserie-table lots-table"
+									className="ecloserie-table lots-table table-with-actions"
 									headers={["Référence", "Éclosion", "Espèce", "Quantité initiale", "Parcours", "Stade", "Créé le", "Actions"]}
 									rows={visibleLots.map((lot) => [
 										<Link key={`${lot.id}-ref`} href={`/production/lots/${lot.id}`}>
