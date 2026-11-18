@@ -37,6 +37,12 @@ describe("toApiError", () => {
 		expect(erreur.generalMessage).toBe(MESSAGE_403);
 	});
 
+	it("traduit le 403 par défaut de DRF (en anglais)", () => {
+		const erreur = toApiError(403, { detail: "You do not have permission to perform this action." });
+		expect(erreur.message).toBe(MESSAGE_403);
+		expect(erreur.generalMessage).toBe(MESSAGE_403);
+	});
+
 	it("garde le detail d'un 403 quand il existe", () => {
 		expect(toApiError(403, { detail: "Compte inactif." }).message).toBe("Compte inactif.");
 	});

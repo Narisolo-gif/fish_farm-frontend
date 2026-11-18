@@ -110,6 +110,24 @@ describe("apiRequest", () => {
 		expect(appelsRefresh()).toBe(1);
 	});
 
+	it("garde la session si le refresh échoue pour une raison réseau ou serveur", async () => {
+		installer([{ status: 503 }], [{ status: 401 }]);
+		await expect(apiRequest("/api/v1/lots/")).rejects.toMatchObject({ status: 401 });
+		expect(storage.store.get("refresh_token")).toBe("R");
+		expect(assign).not.toHaveBeenCalled();
+	});
+
+	it("garde la session si l'appel de refresh lève une erreur réseau", async () => {
+		fetchMock = vi.fn(async (url: string) => {
+			if (url.endsWith("/api/auth/refresh/")) throw new TypeError("Failed to fetch");
+			return reponse({ status: 401 });
+		});
+		vi.stubGlobal("fetch", fetchMock);
+		await expect(apiRequest("/api/v1/lots/")).rejects.toBeDefined();
+		expect(storage.store.get("refresh_token")).toBe("R");
+		expect(assign).not.toHaveBeenCalled();
+	});
+
 	it("ne rafraîchit pas une seconde fois si le rejeu reçoit encore 401", async () => {
 		installer(
 			[{ status: 200, body: { access: "A2", refresh: "R2" } }],

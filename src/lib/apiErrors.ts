@@ -78,8 +78,14 @@ function getErrorMessage(data: unknown): string {
 		.join(" ");
 }
 
+/** Texte par défaut de DRF pour un refus de permission (backend en `en-us`). */
+const DRF_403_DEFAUT = "You do not have permission to perform this action.";
+
 /** Construit l'`ApiError` d'une réponse en échec, à partir de son statut et de son corps JSON (ou `null`). */
 export function toApiError(status: number, data: unknown): ApiError {
+	if (status === 403 && estObjet(data) && data.detail === DRF_403_DEFAUT) {
+		return new ApiError(MESSAGE_403, status, {}, MESSAGE_403, data);
+	}
 	const repli = status === 403 ? MESSAGE_403 : MESSAGE_GENERIQUE;
 	const general = getGeneralErrorMessage(data) || (status === 403 ? MESSAGE_403 : "");
 	return new ApiError(getErrorMessage(data) || repli, status, extractFieldErrors(data), general, data);

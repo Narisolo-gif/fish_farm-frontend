@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import { apiRequest } from "./apiClient";
 import { can, type Ressource } from "./permissions";
-import { getAccessToken, onSessionCleared } from "./session";
+import { getAccessToken, getSessionVersion, onSessionCleared, subscribeSession } from "./session";
 
 export type CurrentUser = {
 	id: number;
@@ -36,9 +36,11 @@ export function fetchCurrentUser(): Promise<CurrentUser> {
 	return enCache;
 }
 
+/** Utilisateur courant ; rechargé à chaque connexion ou déconnexion (version de session). */
 export function useCurrentUser(): { user: CurrentUser | null; loading: boolean } {
 	const [user, setUser] = useState<CurrentUser | null>(null);
 	const [loading, setLoading] = useState(true);
+	const versionSession = useSyncExternalStore(subscribeSession, getSessionVersion, () => 0);
 
 	useEffect(() => {
 		let actif = true;
@@ -56,7 +58,7 @@ export function useCurrentUser(): { user: CurrentUser | null; loading: boolean }
 		return () => {
 			actif = false;
 		};
-	}, []);
+	}, [versionSession]);
 
 	return { user, loading };
 }

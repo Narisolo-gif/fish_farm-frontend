@@ -3,7 +3,7 @@
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import { apiRequest } from "@/lib/apiClient";
-import { setTokens } from "@/lib/session";
+import { clearSession, setTokens } from "@/lib/session";
 
 type LoginResponse = {
 	access: string;
@@ -38,6 +38,7 @@ export default function LoginPage() {
 				},
 			);
 
+			clearSession();
 			setTokens(data.access, data.refresh);
 
 			const user = await apiRequest<{

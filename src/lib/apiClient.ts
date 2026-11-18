@@ -38,10 +38,16 @@ function envoyer(endpoint: string, options: ApiRequestOptions, jeton: string | n
 	return fetch(`${API_URL}${endpoint}`, { ...reste, headers: entetes });
 }
 
-/** Refresh en cours, partagé par toutes les requêtes qui reçoivent un 401 en même temps. */
-let refreshEnCours: Promise<string | null> | null = null;
+/**
+ * Résultat d'un refresh : le nouveau jeton, `null` si le backend refuse le refresh (session finie),
+ * ou `"indisponible"` (réseau, 5xx) : la session est gardée, la requête échoue sans déconnexion.
+ */
+type ResultatRefresh = string | null | "indisponible";
 
-async function rafraichir(): Promise<string | null> {
+/** Refresh en cours, partagé par toutes les requêtes qui reçoivent un 401 en même temps. */
+let refreshEnCours: Promise<ResultatRefresh> | null = null;
+
+async function rafraichir(): Promise<ResultatRefresh> {
 	const refresh = getRefreshToken();
 	if (!refresh) {
 		return null;
@@ -51,8 +57,11 @@ async function rafraichir(): Promise<string | null> {
 		{ method: "POST", auth: false, body: JSON.stringify({ refresh }) },
 		null,
 	).catch(() => null);
-	if (!response?.ok) {
-		return null;
+	if (!response) {
+		return "indisponible";
+	}
+	if (!response.ok) {
+		return response.status === 400 || response.status === 401 ? null : "indisponible";
 	}
 	const data = (await lireCorps(response)) as { access?: string; refresh?: string } | null;
 	if (!data?.access) {
@@ -62,7 +71,7 @@ async function rafraichir(): Promise<string | null> {
 	return data.access;
 }
 
-function rafraichirUneFois(): Promise<string | null> {
+function rafraichirUneFois(): Promise<ResultatRefresh> {
 	refreshEnCours ??= rafraichir().finally(() => {
 		refreshEnCours = null;
 	});
@@ -86,11 +95,11 @@ export async function apiRequest<T>(
 	let response = await envoyer(endpoint, options, getAccessToken());
 
 	if (response.status === 401 && auth && !ROUTES_SANS_REFRESH.includes(endpoint)) {
-		const nouveauJeton = await rafraichirUneFois();
-		if (!nouveauJeton) {
+		const resultat = await rafraichirUneFois();
+		if (resultat === null) {
 			finDeSession();
-		} else {
-			response = await envoyer(endpoint, options, nouveauJeton);
+		} else if (resultat !== "indisponible") {
+			response = await envoyer(endpoint, options, resultat);
 		}
 	}
 
