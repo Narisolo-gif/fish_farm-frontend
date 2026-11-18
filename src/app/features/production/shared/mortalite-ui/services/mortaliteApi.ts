@@ -12,14 +12,6 @@ function getResults<T>(response: ApiListResponse<T>): T[] {
 	return Array.isArray(response) ? response : response.results;
 }
 
-function getAuthHeaders() {
-	const accessToken = localStorage.getItem("access_token");
-	if (!accessToken) {
-		throw new Error("Votre session a expiré. Veuillez vous reconnecter.");
-	}
-	return { Authorization: `Bearer ${accessToken}` };
-}
-
 function query(params: Record<string, string | number | null | undefined>) {
 	const search = new URLSearchParams();
 	for (const [key, value] of Object.entries(params)) {
@@ -32,7 +24,7 @@ function query(params: Record<string, string | number | null | undefined>) {
 }
 
 async function getList<T>(endpoint: string) {
-	return getResults(await apiRequest<ApiListResponse<T>>(endpoint, { headers: getAuthHeaders() }));
+	return getResults(await apiRequest<ApiListResponse<T>>(endpoint));
 }
 
 const EVENEMENTS = "/api/v1/effectifs/evenements-mortalite-perte/";
@@ -52,7 +44,6 @@ export function getCategories() {
 export function createEvenement(payload: EvenementPayload) {
 	return apiRequest<EvenementMortalitePerte>(EVENEMENTS, {
 		method: "POST",
-		headers: getAuthHeaders(),
 		body: JSON.stringify(payload),
 	});
 }
@@ -60,7 +51,6 @@ export function createEvenement(payload: EvenementPayload) {
 export function annulerEvenement(id: number, motif: string) {
 	return apiRequest<EvenementMortalitePerte>(`${EVENEMENTS}${id}/annuler/`, {
 		method: "POST",
-		headers: getAuthHeaders(),
 		body: JSON.stringify({ motif }),
 	});
 }

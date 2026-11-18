@@ -16,6 +16,7 @@ import {
 import { EnvironmentalParametersSection } from "@/app/features/production/shared/environnement/components/EnvironmentalParametersSection";
 import { MortalitePerteJournal } from "@/app/features/production/shared/mortalite-ui/components/MortalitePerteJournal";
 import { ApiError, type ApiFieldErrors, apiRequest } from "@/lib/apiClient";
+import { getAccessToken } from "@/lib/session";
 import { matchesSearch } from "@/lib/search";
 import type { EnvironmentalBasin } from "@/app/features/production/shared/environnement/types/environment.types";
 import type {
@@ -75,7 +76,7 @@ export function ReproductionDashboard() {
 				return;
 			}
 
-			const token = localStorage.getItem("access_token");
+			const token = getAccessToken();
 			if (token) {
 				setAccessToken(token);
 			} else {
@@ -101,19 +102,15 @@ export function ReproductionDashboard() {
 			setLoadError("");
 
 			try {
-				const headers = { Authorization: `Bearer ${accessToken}` };
 				const [basinsResponse, reproductionsResponse, pontesResponse] = await Promise.all([
 					apiRequest<ApiListResponse<EnvironmentalBasin>>(
 						"/api/v1/bassins/?categorie=REPRODUCTION",
-						{ headers },
 					),
 					apiRequest<ApiListResponse<ReproductionRecord>>(
 						"/api/v1/reproduction/reproductions/",
-						{ headers },
 					),
 					apiRequest<ApiListResponse<PonteRecord>>(
 						"/api/v1/reproduction/pontes/",
-						{ headers },
 					),
 				]);
 
@@ -226,7 +223,6 @@ export function ReproductionDashboard() {
 		try {
 			await apiRequest<ReproductionRecord>("/api/v1/reproduction/reproductions/", {
 				method: "POST",
-				headers: { Authorization: `Bearer ${accessToken}` },
 				body: JSON.stringify(reproduction),
 			});
 			setIsLotFormOpen(false);
@@ -253,7 +249,6 @@ export function ReproductionDashboard() {
 		try {
 			await apiRequest<PonteRecord>("/api/v1/reproduction/pontes/", {
 				method: "POST",
-				headers: { Authorization: `Bearer ${accessToken}` },
 				body: JSON.stringify(ponte),
 			});
 			setIsPonteFormOpen(false);

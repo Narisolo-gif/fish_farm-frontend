@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui";
 import { Breadcrumb, PageHeader } from "@/components/PageHeader";
 import { apiRequest } from "@/lib/apiClient";
+import { getAccessToken } from "@/lib/session";
 
 type Role = {
 	id: number;
@@ -27,7 +28,7 @@ export default function NewUserPage() {
 	const [loading, setLoading] = useState(false);
 
 	useEffect(() => {
-		const accessToken = localStorage.getItem("access_token");
+		const accessToken = getAccessToken();
 
 		if (!accessToken) {
 			setError("Votre session a expiré. Veuillez vous reconnecter.");
@@ -36,7 +37,6 @@ export default function NewUserPage() {
 		}
 
 		apiRequest<RolesResponse>("/api/roles", {
-			headers: { Authorization: `Bearer ${accessToken}` },
 		})
 			.then((response) => {
 				setRoles(Array.isArray(response) ? response : response.results);
@@ -56,7 +56,7 @@ export default function NewUserPage() {
 		setError("");
 		setLoading(true);
 
-		const accessToken = localStorage.getItem("access_token");
+		const accessToken = getAccessToken();
 		if (!accessToken) {
 			setError("Votre session a expiré. Veuillez vous reconnecter.");
 			setLoading(false);
@@ -66,7 +66,6 @@ export default function NewUserPage() {
 		try {
 			await apiRequest("/api/users/", {
 				method: "POST",
-				headers: { Authorization: `Bearer ${accessToken}` },
 				body: JSON.stringify({
 					last_name: lastName,
 					first_name: firstName,

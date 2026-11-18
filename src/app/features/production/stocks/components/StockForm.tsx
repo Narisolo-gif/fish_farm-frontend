@@ -3,6 +3,7 @@
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui";
+import { getAccessToken } from "@/lib/session";
 import {
 	createStock,
 	getStockFormOptions,
@@ -132,7 +133,7 @@ export function StockForm({ initialLotId }: { initialLotId?: string } = {}) {
             return;
         }
 
-        const accessToken = localStorage.getItem("access_token");
+        const accessToken = getAccessToken();
         if (!accessToken) {
             setError("Votre session a expiré. Veuillez vous reconnecter.");
             return;

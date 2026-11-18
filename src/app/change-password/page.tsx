@@ -4,6 +4,7 @@ import { FormEvent, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { apiRequest } from "@/lib/apiClient";
+import { getAccessToken } from "@/lib/session";
 
 const passwordRules = [
 	{
@@ -54,7 +55,7 @@ export default function ChangePasswordPage() {
 			return;
 		}
 
-		const accessToken = localStorage.getItem("access_token");
+		const accessToken = getAccessToken();
 		if (!accessToken) {
 			setError("Votre session a expiré. Veuillez vous reconnecter.");
 			return;
@@ -65,9 +66,6 @@ export default function ChangePasswordPage() {
 		try {
 			await apiRequest("/api/users/change-password/", {
 				method: "POST",
-				headers: {
-					Authorization: `Bearer ${accessToken}`,
-				},
 				body: JSON.stringify({
 					ancien_mot_de_passe: oldPassword,
 					nouveau_mot_de_passe: newPassword,

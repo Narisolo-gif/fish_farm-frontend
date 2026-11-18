@@ -3,6 +3,7 @@
 import { type FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { apiRequest } from "@/lib/apiClient";
+import { getAccessToken } from "@/lib/session";
 import type { PonteRecord } from "@/app/features/production/reproduction/types/reproduction.types";
 
 type ApiListResponse<T> = T[] | { results: T[] };
@@ -21,7 +22,7 @@ export function NewEclosionForm() {
 		let isActive = true;
 
 		void Promise.resolve().then(async () => {
-			const accessToken = localStorage.getItem("access_token");
+			const accessToken = getAccessToken();
 			if (!accessToken) {
 				if (isActive) {
 					setPontesError("Votre session a expiré. Veuillez vous reconnecter.");
@@ -33,7 +34,6 @@ export function NewEclosionForm() {
 			try {
 				const response = await apiRequest<ApiListResponse<PonteRecord>>(
 					"/api/v1/reproduction/pontes/",
-					{ headers: { Authorization: `Bearer ${accessToken}` } },
 				);
 				if (isActive) {
 					setPontes(Array.isArray(response) ? response : response.results);
@@ -93,7 +93,7 @@ export function NewEclosionForm() {
 			return;
 		}
 
-		const accessToken = localStorage.getItem("access_token");
+		const accessToken = getAccessToken();
 		if (!accessToken) {
 			setSaveError("Votre session a expiré. Veuillez vous reconnecter.");
 			return;
@@ -105,7 +105,6 @@ export function NewEclosionForm() {
 		try {
 			await apiRequest("/api/v1/ecloserie/", {
 				method: "POST",
-				headers: { Authorization: `Bearer ${accessToken}` },
 				body: JSON.stringify({
 					reference: reference.trim(),
 					reference_ponte: selectedPonte.reference,

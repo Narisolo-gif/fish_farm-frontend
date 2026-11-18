@@ -5,6 +5,7 @@ import { SectionHeading } from "@/components/ui";
 import { Pagination } from "@/components/Pagination";
 import { usePagination } from "@/app/hooks/usePagination";
 import { apiRequest } from "@/lib/apiClient";
+import { getAccessToken } from "@/lib/session";
 import { EnvironnementParametersForm } from "@/app/features/production/shared/environnement/components/EnvironnementParametersForm";
 import { EnvironmentalParametersTable } from "@/app/features/production/shared/environnement/components/EnvironmentalParametersTable";
 import {
@@ -86,7 +87,7 @@ export function EnvironmentalParametersSection({
 				return;
 			}
 
-			const token = localStorage.getItem("access_token");
+			const token = getAccessToken();
 			if (!token) {
 				setAuthError("Votre session a expiré. Veuillez vous reconnecter.");
 				setIsLoadingMeasurements(false);
@@ -112,7 +113,6 @@ export function EnvironmentalParametersSection({
 			try {
 				const response = await apiRequest<ApiListResponse<EnvironmentalBasin>>(
 					"/api/v1/bassins/",
-					{ headers: { Authorization: `Bearer ${accessToken}` } },
 				);
 
 				if (isActive) {
@@ -162,7 +162,6 @@ export function EnvironmentalParametersSection({
 						: `/api/v1/environnement/?bassin=${encodeURIComponent(selectedBasinId)}`;
 				const response = await apiRequest<ApiListResponse<EnvironmentalMeasurement>>(
 					endpoint,
-					{ headers: { Authorization: `Bearer ${accessToken}` } },
 				);
 
 				if (!isActive) {
@@ -235,7 +234,6 @@ export function EnvironmentalParametersSection({
 		try {
 			await apiRequest<EnvironmentalMeasurement>("/api/v1/environnement/", {
 				method: "POST",
-				headers: { Authorization: `Bearer ${accessToken}` },
 				body: JSON.stringify(measurement),
 			});
 			if (!isBasinControlled) {

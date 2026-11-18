@@ -10,6 +10,7 @@ import { PageHeader } from "@/components/PageHeader";
 import { Pagination } from "@/components/Pagination";
 import { usePagination } from "@/app/hooks/usePagination";
 import { apiRequest } from "@/lib/apiClient";
+import { getAccessToken } from "@/lib/session";
 
 type ApiTraitement = {
 	id: number;
@@ -81,7 +82,7 @@ export default function TraitementsPage() {
 		let isActive = true;
 
 		async function loadTraitements() {
-			const accessToken = localStorage.getItem("access_token");
+			const accessToken = getAccessToken();
 			if (!accessToken) {
 				setError("Votre session a expiré. Veuillez vous reconnecter.");
 				setLoading(false);
@@ -90,7 +91,6 @@ export default function TraitementsPage() {
 
 			try {
 				const response = await apiRequest<TraitementsResponse>("/api/v1/traitement/", {
-					headers: { Authorization: `Bearer ${accessToken}` },
 				});
 				if (isActive) {
 					setTraitements(getResults(response));

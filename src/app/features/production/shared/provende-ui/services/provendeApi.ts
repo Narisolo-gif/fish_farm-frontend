@@ -14,14 +14,6 @@ function getResults<T>(response: ApiListResponse<T>): T[] {
 	return Array.isArray(response) ? response : response.results;
 }
 
-function getAuthHeaders() {
-	const accessToken = localStorage.getItem("access_token");
-	if (!accessToken) {
-		throw new Error("Votre session a expiré. Veuillez vous reconnecter.");
-	}
-	return { Authorization: `Bearer ${accessToken}` };
-}
-
 function query(params: Record<string, string | number | null | undefined>) {
 	const search = new URLSearchParams();
 	for (const [key, value] of Object.entries(params)) {
@@ -34,7 +26,7 @@ function query(params: Record<string, string | number | null | undefined>) {
 }
 
 async function getList<T>(endpoint: string) {
-	return getResults(await apiRequest<ApiListResponse<T>>(endpoint, { headers: getAuthHeaders() }));
+	return getResults(await apiRequest<ApiListResponse<T>>(endpoint));
 }
 
 const CONSOMMATIONS = "/api/v1/provende/consommations-provende/";
@@ -54,7 +46,6 @@ export function getConsommations(filters: { bassin: number; hapa?: number; date_
 export function createConsommation(payload: ConsommationProvendePayload) {
 	return apiRequest<ConsommationProvende>(CONSOMMATIONS, {
 		method: "POST",
-		headers: getAuthHeaders(),
 		body: JSON.stringify(payload),
 	});
 }
@@ -62,7 +53,6 @@ export function createConsommation(payload: ConsommationProvendePayload) {
 export function annulerConsommation(id: number, motif: string) {
 	return apiRequest<ConsommationProvende>(`${CONSOMMATIONS}${id}/annuler/`, {
 		method: "POST",
-		headers: getAuthHeaders(),
 		body: JSON.stringify({ motif }),
 	});
 }
@@ -98,12 +88,10 @@ type PeriodeFilters = { bassin: number; hapa?: number | null; date_min: string; 
 
 export function getTotauxJournaliers(filters: PeriodeFilters) {
 	return apiRequest<TotalJournalier[]>(`${CONSOMMATIONS}totaux-journaliers/${query(filters)}`, {
-		headers: getAuthHeaders(),
 	});
 }
 
 export function getJoursManquants(filters: PeriodeFilters) {
 	return apiRequest<JoursManquantsResponse>(`${CONSOMMATIONS}jours-manquants/${query(filters)}`, {
-		headers: getAuthHeaders(),
 	});
 }

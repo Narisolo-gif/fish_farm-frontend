@@ -56,19 +56,9 @@ export function getResults<T>(response: ApiListResponse<T>): T[] {
 	return Array.isArray(response) ? response : response.results;
 }
 
-function getAuthHeaders() {
-	const accessToken = localStorage.getItem("access_token");
-	if (!accessToken) {
-		throw new Error("Votre session a expiré. Veuillez vous reconnecter.");
-	}
-
-	return { Authorization: `Bearer ${accessToken}` };
-}
-
 export async function getStockHistory() {
 	return getResults(
 		await apiRequest<ApiListResponse<StockRecord>>("/api/v1/stocks/", {
-			headers: getAuthHeaders(),
 		}),
 	);
 }
@@ -82,19 +72,16 @@ export async function getMiseEnStockDuLot(lotId: number) {
 export async function getStockDetail(stockId: string) {
 	return apiRequest<StockRecord>(
 		`/api/v1/stocks/${encodeURIComponent(stockId)}/`,
-		{ headers: getAuthHeaders() },
 	);
 }
 
 export async function getStockFormOptions() {
-	const headers = getAuthHeaders();
 	const [lotsResponse, basinsResponse, treatmentsResponse] = await Promise.all([
-		apiRequest<ApiListResponse<StockLot>>("/api/v1/lots/", { headers }),
+		apiRequest<ApiListResponse<StockLot>>("/api/v1/lots/"),
 		apiRequest<ApiListResponse<StockBassin>>(
 			"/api/v1/bassins/?categorie=STOCKS&statut=ACTIF",
-			{ headers },
 		),
-		apiRequest<ApiListResponse<StockTreatment>>("/api/v1/traitement/", { headers }),
+		apiRequest<ApiListResponse<StockTreatment>>("/api/v1/traitement/"),
 	]);
 
 	return {
@@ -117,7 +104,6 @@ export async function createStock(payload: {
 }) {
 	return apiRequest<StockRecord>("/api/v1/stocks/", {
 		method: "POST",
-		headers: getAuthHeaders(),
 		body: JSON.stringify(payload),
 	});
 }

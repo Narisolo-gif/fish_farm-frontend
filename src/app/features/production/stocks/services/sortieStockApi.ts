@@ -7,19 +7,11 @@ import type {
 	SortieStockPayload,
 } from "@/app/features/production/stocks/types/sortieStock.types";
 
-function getAuthHeaders() {
-	const accessToken = localStorage.getItem("access_token");
-	if (!accessToken) {
-		throw new Error("Votre session a expiré. Veuillez vous reconnecter.");
-	}
-	return { Authorization: `Bearer ${accessToken}` };
-}
-
 const SORTIES = "/api/v1/effectifs/sorties-stock/";
 
 export async function getSortiesDuLot(lotId: number) {
 	return getResults(
-		await apiRequest<ApiListResponse<SortieStock>>(`${SORTIES}?lot=${lotId}`, { headers: getAuthHeaders() }),
+		await apiRequest<ApiListResponse<SortieStock>>(`${SORTIES}?lot=${lotId}`),
 	);
 }
 
@@ -27,7 +19,6 @@ export async function getSortiesDuLot(lotId: number) {
 export async function getBassinsDestination() {
 	const bassins = getResults(
 		await apiRequest<ApiListResponse<BassinDestination>>("/api/v1/bassins/?categorie=GROSSISSEMENT&statut=ACTIF", {
-			headers: getAuthHeaders(),
 		}),
 	);
 	return bassins.filter((bassin) => bassin.categorie === "GROSSISSEMENT" && bassin.statut === "ACTIF");
@@ -36,7 +27,6 @@ export async function getBassinsDestination() {
 export function createSortie(payload: SortieStockPayload & { id_lot: number }) {
 	return apiRequest<SortieStock>(SORTIES, {
 		method: "POST",
-		headers: getAuthHeaders(),
 		body: JSON.stringify(payload),
 	});
 }
@@ -45,19 +35,17 @@ export function createSortie(payload: SortieStockPayload & { id_lot: number }) {
 export function updateSortie(id: number, payload: SortieStockPayload) {
 	return apiRequest<SortieStock>(`${SORTIES}${id}/`, {
 		method: "PATCH",
-		headers: getAuthHeaders(),
 		body: JSON.stringify(payload),
 	});
 }
 
 export function getApercuSortie(id: number) {
-	return apiRequest<ApercuSortie>(`${SORTIES}${id}/apercu/`, { headers: getAuthHeaders() });
+	return apiRequest<ApercuSortie>(`${SORTIES}${id}/apercu/`);
 }
 
 export function validerSortie(id: number, payload: { effectif_entrant: number; justification_ecart: string }) {
 	return apiRequest<SortieStock>(`${SORTIES}${id}/valider/`, {
 		method: "POST",
-		headers: getAuthHeaders(),
 		body: JSON.stringify(payload),
 	});
 }
@@ -65,7 +53,6 @@ export function validerSortie(id: number, payload: { effectif_entrant: number; j
 export function annulerSortie(id: number, motif: string) {
 	return apiRequest<SortieStock>(`${SORTIES}${id}/annuler/`, {
 		method: "POST",
-		headers: getAuthHeaders(),
 		body: JSON.stringify({ motif }),
 	});
 }

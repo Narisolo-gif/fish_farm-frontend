@@ -9,6 +9,7 @@ import { Pagination } from "@/components/Pagination";
 import { PageHeader } from "@/components/PageHeader";
 import { usePagination } from "@/app/hooks/usePagination";
 import { apiRequest } from "@/lib/apiClient";
+import { getAccessToken } from "@/lib/session";
 
 type ApiHapa = {
 	id: number;
@@ -65,7 +66,7 @@ export default function BassinsPage() {
 		let isActive = true;
 
 		async function loadBassins() {
-			const accessToken = localStorage.getItem("access_token");
+			const accessToken = getAccessToken();
 			if (!accessToken) {
 				setError("Votre session a expiré. Veuillez vous reconnecter.");
 				setLoading(false);
@@ -74,7 +75,6 @@ export default function BassinsPage() {
 
 			try {
 				const response = await apiRequest<BassinsResponse>("/api/v1/bassins/", {
-					headers: { Authorization: `Bearer ${accessToken}` },
 				});
 				if (isActive) {
 					setBassins(Array.isArray(response) ? response : response.results);

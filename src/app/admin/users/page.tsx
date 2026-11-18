@@ -7,6 +7,7 @@ import { ListSearch } from "@/components/ListSearch";
 import { Pagination } from "@/components/Pagination";
 import { PageHeader } from "@/components/PageHeader";
 import { apiRequest } from "@/lib/apiClient";
+import { getAccessToken } from "@/lib/session";
 import { useDebouncedValue } from "@/app/hooks/useDebouncedValue";
 import { usePagination } from "@/app/hooks/usePagination";
 
@@ -81,7 +82,7 @@ export default function UsersPage() {
 	} = usePagination(filteredUsers, 10);
 
 	useEffect(() => {
-		const accessToken = localStorage.getItem("access_token");
+		const accessToken = getAccessToken();
 
 		if (!accessToken) {
 			setError("Votre session a expiré. Veuillez vous reconnecter.");
@@ -90,7 +91,6 @@ export default function UsersPage() {
 		}
 
 		apiRequest<RolesResponse>("/api/roles", {
-			headers: { Authorization: `Bearer ${accessToken}` },
 		})
 			.then((response) => {
 				setRoles(Array.isArray(response) ? response : response.results);
@@ -102,7 +102,6 @@ export default function UsersPage() {
 			});
 
 		apiRequest<UserListResponse>("/api/users/", {
-			headers: { Authorization: `Bearer ${accessToken}` },
 		})
 			.then((response) => {
 				setUsers(Array.isArray(response) ? response : response.results);
@@ -145,7 +144,7 @@ export default function UsersPage() {
 		event.preventDefault();
 		if (!editingUser) return;
 
-		const accessToken = localStorage.getItem("access_token");
+		const accessToken = getAccessToken();
 		if (!accessToken) {
 			setError("Votre session a expiré. Veuillez vous reconnecter.");
 			return;
@@ -156,7 +155,6 @@ export default function UsersPage() {
 		try {
 			await apiRequest(`/api/users/${editingUser.id}/`, {
 				method: "PATCH",
-				headers: { Authorization: `Bearer ${accessToken}` },
 				body: JSON.stringify({
 					...editForm,
 					role: Number(editForm.role),
@@ -184,7 +182,7 @@ export default function UsersPage() {
 	}
 
 	async function toggleActive(user: ApiUser) {
-		const accessToken = localStorage.getItem("access_token");
+		const accessToken = getAccessToken();
 		if (!accessToken) {
 			setError("Votre session a expiré. Veuillez vous reconnecter.");
 			return;
@@ -197,7 +195,6 @@ export default function UsersPage() {
 		try {
 			await apiRequest(`/api/users/${user.id}/`, {
 				method: "PATCH",
-				headers: { Authorization: `Bearer ${accessToken}` },
 				body: JSON.stringify({ is_active: isActive }),
 			});
 			setUsers((currentUsers) =>
@@ -218,7 +215,7 @@ export default function UsersPage() {
 			return;
 		}
 
-		const accessToken = localStorage.getItem("access_token");
+		const accessToken = getAccessToken();
 		if (!accessToken) {
 			setError("Votre session a expiré. Veuillez vous reconnecter.");
 			return;
@@ -230,7 +227,6 @@ export default function UsersPage() {
 		try {
 			await apiRequest(`/api/users/${user.id}/reset-password/`, {
 				method: "POST",
-				headers: { Authorization: `Bearer ${accessToken}` },
 			});
 			setNotice(`Le mot de passe de ${user.username} a été réinitialisé.`);
 		} catch (err) {

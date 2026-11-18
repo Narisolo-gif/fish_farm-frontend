@@ -20,6 +20,7 @@ import type {
 import type { EnvironmentalBasin } from "@/app/features/production/shared/environnement/types/environment.types";
 import type { LotRecord } from "@/app/features/production/lots/types/lot.types";
 import { apiRequest } from "@/lib/apiClient";
+import { getAccessToken } from "@/lib/session";
 import { matchesSearch } from "@/lib/search";
 import Link from "next/link";
 
@@ -47,7 +48,7 @@ export function EcloserieDashboard() {
 		let isActive = true;
 
 		void Promise.resolve().then(async () => {
-			const accessToken = localStorage.getItem("access_token");
+			const accessToken = getAccessToken();
 			if (!accessToken) {
 				if (isActive) {
 					setHistoryError("Votre session a expiré. Veuillez vous reconnecter.");
@@ -57,13 +58,12 @@ export function EcloserieDashboard() {
 			}
 
 			try {
-				const headers = { Authorization: `Bearer ${accessToken}` };
 				const [basinsResponse, reproductionsResponse, pontesResponse, eclosionsResponse, lotsResponse] = await Promise.all([
-					apiRequest<ApiListResponse<EnvironmentalBasin>>("/api/v1/bassins/?categorie=REPRODUCTION", { headers }),
-					apiRequest<ApiListResponse<ReproductionRecord>>("/api/v1/reproduction/reproductions/", { headers }),
-					apiRequest<ApiListResponse<PonteRecord>>("/api/v1/reproduction/pontes/", { headers }),
-					apiRequest<ApiListResponse<ApiEclosionRecord>>("/api/v1/ecloserie/", { headers }),
-					apiRequest<ApiListResponse<LotRecord>>("/api/v1/lots/", { headers }),
+					apiRequest<ApiListResponse<EnvironmentalBasin>>("/api/v1/bassins/?categorie=REPRODUCTION"),
+					apiRequest<ApiListResponse<ReproductionRecord>>("/api/v1/reproduction/reproductions/"),
+					apiRequest<ApiListResponse<PonteRecord>>("/api/v1/reproduction/pontes/"),
+					apiRequest<ApiListResponse<ApiEclosionRecord>>("/api/v1/ecloserie/"),
+					apiRequest<ApiListResponse<LotRecord>>("/api/v1/lots/"),
 				]);
 				if (isActive) {
 					const loadedBasins = getResults(basinsResponse);

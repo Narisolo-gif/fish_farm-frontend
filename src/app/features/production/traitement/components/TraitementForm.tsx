@@ -4,6 +4,7 @@ import { FormEvent, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui";
 import { apiRequest } from "@/lib/apiClient";
+import { getAccessToken } from "@/lib/session";
 
 type ApiHapa = {
 	id: number;
@@ -81,7 +82,7 @@ export function TraitementForm() {
 		let isActive = true;
 
 		async function loadOptions() {
-			const accessToken = localStorage.getItem("access_token");
+			const accessToken = getAccessToken();
 			if (!accessToken) {
 				setError("Votre session a expiré. Veuillez vous reconnecter.");
 				setLoading(false);
@@ -89,17 +90,15 @@ export function TraitementForm() {
 			}
 
 			try {
-				const headers = { Authorization: `Bearer ${accessToken}` };
 				const [lotsResponse, bassinsResponse, provendesResponse, typesResponse, traitementsResponse] =
 					await Promise.all([
-						apiRequest<ApiListResponse<ApiLot>>("/api/v1/lots/", { headers }),
+						apiRequest<ApiListResponse<ApiLot>>("/api/v1/lots/"),
 						apiRequest<ApiListResponse<ApiBassin>>(
 							"/api/v1/bassins/?categorie=TRAITEMENT&statut=ACTIF",
-							{ headers },
 						),
-						apiRequest<ApiListResponse<ApiProvende>>("/api/v1/provende/", { headers }),
-						apiRequest<ApiListResponse<ApiTypeProvende>>("/api/v1/provende/types/", { headers }),
-						apiRequest<ApiListResponse<ApiTraitement>>("/api/v1/traitement/", { headers }),
+						apiRequest<ApiListResponse<ApiProvende>>("/api/v1/provende/"),
+						apiRequest<ApiListResponse<ApiTypeProvende>>("/api/v1/provende/types/"),
+						apiRequest<ApiListResponse<ApiTraitement>>("/api/v1/traitement/"),
 					]);
 				const treatmentTypeId = getResults(typesResponse).find(
 					(type) => type.type === "TRAITEMENT",
@@ -196,7 +195,7 @@ export function TraitementForm() {
 			}
 		}
 
-		const accessToken = localStorage.getItem("access_token");
+		const accessToken = getAccessToken();
 		if (!accessToken) {
 			setError("Votre session a expiré. Veuillez vous reconnecter.");
 			return;
@@ -206,7 +205,6 @@ export function TraitementForm() {
 		try {
 			await apiRequest<{ id: number }>("/api/v1/traitement/", {
 				method: "POST",
-				headers: { Authorization: `Bearer ${accessToken}` },
 				body: JSON.stringify({
 					id_lot: Number(lotId),
 					id_bassin: Number(bassinId),

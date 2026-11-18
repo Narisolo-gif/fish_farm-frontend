@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { PageHeader } from "@/components/PageHeader";
 import { apiRequest } from "@/lib/apiClient";
+import { getAccessToken } from "@/lib/session";
 import { BassinMouvementsSection } from "@/app/features/production/shared/mortalite-ui/components/BassinMouvementsSection";
 import { MortalitePerteJournal } from "@/app/features/production/shared/mortalite-ui/components/MortalitePerteJournal";
 
@@ -34,12 +35,11 @@ export function BassinDetail({ bassinId }: { bassinId: string }) {
 		let isActive = true;
 		Promise.resolve()
 			.then(() => {
-				const accessToken = localStorage.getItem("access_token");
+				const accessToken = getAccessToken();
 				if (!accessToken) {
 					throw new Error("Votre session a expiré. Veuillez vous reconnecter.");
 				}
 				return apiRequest<BassinRecord>(`/api/v1/bassins/${encodeURIComponent(bassinId)}/`, {
-					headers: { Authorization: `Bearer ${accessToken}` },
 				});
 			})
 			.then((loaded) => {

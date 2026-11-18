@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui";
 import { Breadcrumb, PageHeader } from "@/components/PageHeader";
 import { apiRequest } from "@/lib/apiClient";
+import { getAccessToken } from "@/lib/session";
 
 const basinCategories = [
 	{ value: "REPRODUCTION", label: "Reproduction" },
@@ -57,7 +58,7 @@ export default function NewBasinPage() {
 		setError("");
 		setLoading(true);
 
-		const accessToken = localStorage.getItem("access_token");
+		const accessToken = getAccessToken();
 		if (!accessToken) {
 			setError("Votre session a expiré. Veuillez vous reconnecter.");
 			setLoading(false);
@@ -67,7 +68,6 @@ export default function NewBasinPage() {
 		try {
 			await apiRequest("/api/v1/bassins/", {
 				method: "POST",
-				headers: { Authorization: `Bearer ${accessToken}` },
 				body: JSON.stringify({
 					reference: reference.trim(),
 					categorie: category,

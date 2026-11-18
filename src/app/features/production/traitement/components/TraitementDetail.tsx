@@ -8,6 +8,7 @@ import type {
 	TraitementSection,
 } from "@/app/features/production/traitement/types/traitement.types";
 import { apiRequest } from "@/lib/apiClient";
+import { getAccessToken } from "@/lib/session";
 
 const MortalitePerteJournal = dynamic(
 	() =>
@@ -67,7 +68,7 @@ export function TraitementDetail({ traitementId }: { traitementId: string }) {
 			setDetailError("");
 			setTraitementDetail(null);
 
-			const accessToken = localStorage.getItem("access_token");
+			const accessToken = getAccessToken();
 			if (!accessToken) {
 				setDetailError("Votre session a expiré. Veuillez vous reconnecter.");
 				setIsLoadingDetail(false);
@@ -77,7 +78,6 @@ export function TraitementDetail({ traitementId }: { traitementId: string }) {
 			try {
 				const detail = await apiRequest<TraitementDetailData>(
 					`/api/v1/traitement/${encodeURIComponent(traitementId)}/`,
-					{ headers: { Authorization: `Bearer ${accessToken}` } },
 				);
 
 				if (isActive) {

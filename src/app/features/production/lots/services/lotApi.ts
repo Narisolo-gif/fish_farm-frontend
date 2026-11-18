@@ -14,27 +14,18 @@ function getResults<T>(response: ApiListResponse<T>): T[] {
 	return Array.isArray(response) ? response : response.results;
 }
 
-function getAuthHeaders() {
-	const accessToken = localStorage.getItem("access_token");
-	if (!accessToken) {
-		throw new Error("Votre session a expiré. Veuillez vous reconnecter.");
-	}
-
-	return { Authorization: `Bearer ${accessToken}` };
-}
-
 function lotUrl(lotId: number | string) {
 	return `/api/v1/lots/${encodeURIComponent(String(lotId))}/`;
 }
 
 export async function getLots() {
 	return getResults(
-		await apiRequest<ApiListResponse<LotRecord>>("/api/v1/lots/", { headers: getAuthHeaders() }),
+		await apiRequest<ApiListResponse<LotRecord>>("/api/v1/lots/"),
 	);
 }
 
 export async function getLot(lotId: number | string) {
-	return apiRequest<LotRecord>(lotUrl(lotId), { headers: getAuthHeaders() });
+	return apiRequest<LotRecord>(lotUrl(lotId));
 }
 
 /**
@@ -43,14 +34,14 @@ export async function getLot(lotId: number | string) {
  */
 export async function getLotEffectif(lot: Pick<LotRecord, "id" | "quantite_initiale">) {
 	const mouvements = getResults(
-		await apiRequest<ApiListResponse<MouvementEffectif>>("/api/v1/effectifs/", { headers: getAuthHeaders() }),
+		await apiRequest<ApiListResponse<MouvementEffectif>>("/api/v1/effectifs/"),
 	);
 	return computeLotEffectif(lot, mouvements);
 }
 
 export async function getEclosions() {
 	return getResults(
-		await apiRequest<ApiListResponse<LotEclosion>>("/api/v1/ecloserie/", { headers: getAuthHeaders() }),
+		await apiRequest<ApiListResponse<LotEclosion>>("/api/v1/ecloserie/"),
 	);
 }
 
@@ -66,7 +57,6 @@ export async function getAvailableEclosions() {
 export async function createLot(payload: LotCreatePayload) {
 	return apiRequest<LotRecord>("/api/v1/lots/", {
 		method: "POST",
-		headers: getAuthHeaders(),
 		body: JSON.stringify(payload),
 	});
 }
@@ -74,7 +64,6 @@ export async function createLot(payload: LotCreatePayload) {
 export async function updateLot(lotId: number | string, payload: LotUpdatePayload) {
 	return apiRequest<LotRecord>(lotUrl(lotId), {
 		method: "PATCH",
-		headers: getAuthHeaders(),
 		body: JSON.stringify(payload),
 	});
 }
@@ -82,10 +71,10 @@ export async function updateLot(lotId: number | string, payload: LotUpdatePayloa
 export async function cloturerLot(lotId: number | string) {
 	return apiRequest<{ detail: string; id: number; reference: string; stade: LotRecord["stade"] }>(
 		`${lotUrl(lotId)}cloturer/`,
-		{ method: "PATCH", headers: getAuthHeaders() },
+		{ method: "PATCH" },
 	);
 }
 
 export async function deleteLot(lotId: number | string) {
-	await apiRequest<null>(lotUrl(lotId), { method: "DELETE", headers: getAuthHeaders() });
+	await apiRequest<null>(lotUrl(lotId), { method: "DELETE" });
 }

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { apiRequest, logout } from "@/lib/apiClient";
+import { getAccessToken } from "@/lib/session";
 
 type SidebarProps = {
   isAdmin: boolean;
@@ -60,14 +61,13 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const [username, setUsername] = useState("Utilisateur");
 
   useEffect(() => {
-    const accessToken = localStorage.getItem("access_token");
+    const accessToken = getAccessToken();
 
     if (!accessToken) {
       return;
     }
 
     apiRequest<{ username: string }>("/api/auth/me/", {
-      headers: { Authorization: `Bearer ${accessToken}` },
     })
       .then((user) => setUsername(user.username))
       .catch(() => undefined);
