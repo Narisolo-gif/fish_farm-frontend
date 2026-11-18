@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { apiRequest } from "@/lib/apiClient";
+import { apiRequest, logout } from "@/lib/apiClient";
 
 type SidebarProps = {
   isAdmin: boolean;
@@ -74,28 +74,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   }, []);
 
   async function handleLogout() {
-    const accessToken = localStorage.getItem("access_token");
-    const refreshToken = localStorage.getItem("refresh_token");
-
-    try {
-      if (accessToken && refreshToken) {
-        await apiRequest("/api/auth/logout/", {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-          body: JSON.stringify({
-            refresh: refreshToken,
-          }),
-        });
-      }
-    } catch (error) {
-      console.error("Erreur lors de la déconnexion :", error);
-    } finally {
-      localStorage.removeItem("access_token");
-      localStorage.removeItem("refresh_token");
-      router.push("/login");
-    }
+    await logout();
+    router.push("/login");
   }
 
   if (pathname === "/login") {

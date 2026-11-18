@@ -3,6 +3,7 @@
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import { apiRequest } from "@/lib/apiClient";
+import { setTokens } from "@/lib/session";
 
 type LoginResponse = {
 	access: string;
@@ -29,6 +30,7 @@ export default function LoginPage() {
 				"/api/auth/login/",
 				{
 					method: "POST",
+					auth: false,
 					body: JSON.stringify({
 						username,
 						password,
@@ -36,8 +38,7 @@ export default function LoginPage() {
 				},
 			);
 
-			localStorage.setItem("access_token", data.access);
-			localStorage.setItem("refresh_token", data.refresh);
+			setTokens(data.access, data.refresh);
 
 			const user = await apiRequest<{
 				id: number;
@@ -47,11 +48,7 @@ export default function LoginPage() {
 					libelle: string;
 				};
 				must_change_password: boolean;
-			}>("/api/auth/me/", {
-				headers: {
-					Authorization: `Bearer ${data.access}`,
-				},
-			});
+			}>("/api/auth/me/");
 
 			if (user.must_change_password) {
 				router.push("/change-password");
