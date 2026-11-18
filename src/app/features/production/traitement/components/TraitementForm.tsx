@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useEffect, useMemo, useState } from "react";
+import { listResults } from "@/lib/formatters";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui";
 import { apiRequest } from "@/lib/apiClient";
@@ -45,10 +46,6 @@ type ApiTraitement = {
 };
 
 type ApiListResponse<T> = T[] | { results: T[] };
-
-function getResults<T>(response: ApiListResponse<T>): T[] {
-	return Array.isArray(response) ? response : response.results;
-}
 
 export function TraitementForm() {
 	const router = useRouter();
@@ -100,16 +97,16 @@ export function TraitementForm() {
 						apiRequest<ApiListResponse<ApiTypeProvende>>("/api/v1/provende/types/"),
 						apiRequest<ApiListResponse<ApiTraitement>>("/api/v1/traitement/"),
 					]);
-				const treatmentTypeId = getResults(typesResponse).find(
+				const treatmentTypeId = listResults(typesResponse).find(
 					(type) => type.type === "TRAITEMENT",
 				)?.id;
 				const treatedLotIds = new Set(
-					getResults(traitementsResponse).map((traitement) => traitement.id_lot),
+					listResults(traitementsResponse).map((traitement) => traitement.id_lot),
 				);
 
 				if (isActive) {
 					setLots(
-						getResults(lotsResponse).filter(
+						listResults(lotsResponse).filter(
 							(lot) =>
 								lot.stade === "CREEE" &&
 								lot.parcours_production !== "SANS_TRAITEMENT" &&
@@ -117,7 +114,7 @@ export function TraitementForm() {
 						),
 					);
 					setBassins(
-						getResults(bassinsResponse).filter(
+						listResults(bassinsResponse).filter(
 							(bassin) =>
 								bassin.categorie === "TRAITEMENT" &&
 								bassin.statut === "ACTIF",
@@ -126,7 +123,7 @@ export function TraitementForm() {
 					setProvendes(
 						treatmentTypeId === undefined
 							? []
-							: getResults(provendesResponse).filter(
+							: listResults(provendesResponse).filter(
 									(provende) => provende.type_provende === treatmentTypeId,
 								),
 					);

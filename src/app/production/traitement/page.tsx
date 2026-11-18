@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { listResults } from "@/lib/formatters";
 import { DetailIconLink } from "@/components/DetailIconLink";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui";
@@ -24,10 +25,6 @@ type ApiTraitement = {
 };
 
 type TraitementsResponse = ApiTraitement[] | { results: ApiTraitement[] };
-
-function getResults(response: TraitementsResponse): ApiTraitement[] {
-	return Array.isArray(response) ? response : response.results;
-}
 
 function formatDate(date: string | null) {
 	if (!date) {
@@ -93,7 +90,7 @@ export default function TraitementsPage() {
 				const response = await apiRequest<TraitementsResponse>("/api/v1/traitement/", {
 				});
 				if (isActive) {
-					setTraitements(getResults(response));
+					setTraitements(listResults(response));
 				}
 			} catch (loadError) {
 				if (isActive) {

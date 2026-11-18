@@ -1,3 +1,4 @@
+import { listResults } from "@/lib/formatters";
 import { apiRequest } from "@/lib/apiClient";
 import type {
 	ConsommationProvende,
@@ -9,10 +10,6 @@ import type {
 } from "@/app/features/production/shared/provende-ui/types/provende.types";
 
 type ApiListResponse<T> = T[] | { results: T[] };
-
-function getResults<T>(response: ApiListResponse<T>): T[] {
-	return Array.isArray(response) ? response : response.results;
-}
 
 function query(params: Record<string, string | number | null | undefined>) {
 	const search = new URLSearchParams();
@@ -26,7 +23,7 @@ function query(params: Record<string, string | number | null | undefined>) {
 }
 
 async function getList<T>(endpoint: string) {
-	return getResults(await apiRequest<ApiListResponse<T>>(endpoint));
+	return listResults(await apiRequest<ApiListResponse<T>>(endpoint));
 }
 
 const CONSOMMATIONS = "/api/v1/provende/consommations-provende/";

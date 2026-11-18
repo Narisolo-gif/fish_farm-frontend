@@ -1,3 +1,4 @@
+import { listResults } from "@/lib/formatters";
 import { apiRequest } from "@/lib/apiClient";
 
 export type StockHapa = {
@@ -52,12 +53,8 @@ export type StockTreatment = {
 
 export type ApiListResponse<T> = T[] | { results: T[] };
 
-export function getResults<T>(response: ApiListResponse<T>): T[] {
-	return Array.isArray(response) ? response : response.results;
-}
-
 export async function getStockHistory() {
-	return getResults(
+	return listResults(
 		await apiRequest<ApiListResponse<StockRecord>>("/api/v1/stocks/", {
 		}),
 	);
@@ -85,11 +82,11 @@ export async function getStockFormOptions() {
 	]);
 
 	return {
-		lots: getResults(lotsResponse),
-		basins: getResults(basinsResponse).filter(
+		lots: listResults(lotsResponse),
+		basins: listResults(basinsResponse).filter(
 			(basin) => basin.categorie === "STOCKS" && basin.statut === "ACTIF",
 		),
-		treatments: getResults(treatmentsResponse),
+		treatments: listResults(treatmentsResponse),
 	};
 }
 

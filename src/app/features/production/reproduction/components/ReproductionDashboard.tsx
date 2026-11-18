@@ -1,5 +1,6 @@
 "use client";
 
+import { listResults } from "@/lib/formatters";
 import { useEffect, useMemo, useState } from "react";
 import { SectionHeading } from "@/components/ui";
 import { DataTable } from "@/components/DataTable";
@@ -30,10 +31,6 @@ const rowsPerPage = 5;
 const historyRange = 5;
 
 type ApiListResponse<T> = T[] | { results: T[] };
-
-function getResults<T>(response: ApiListResponse<T>): T[] {
-	return Array.isArray(response) ? response : response.results;
-}
 
 function getErrorMessage(error: unknown, fallback: string) {
 	return error instanceof Error ? error.message : fallback;
@@ -115,10 +112,10 @@ export function ReproductionDashboard() {
 				]);
 
 				if (isActive) {
-					const loadedBasins = getResults(basinsResponse);
+					const loadedBasins = listResults(basinsResponse);
 					setBasins(loadedBasins);
-					setReproductions(getResults(reproductionsResponse));
-					setPontes(getResults(pontesResponse));
+					setReproductions(listResults(reproductionsResponse));
+					setPontes(listResults(pontesResponse));
 					// Le backend trie les bassins par date de création décroissante :
 					// le premier est le plus récent et sert de bassin par défaut.
 					setSelectedBasinId((current) =>

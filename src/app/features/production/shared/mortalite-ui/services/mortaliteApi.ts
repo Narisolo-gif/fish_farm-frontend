@@ -1,3 +1,4 @@
+import { listResults } from "@/lib/formatters";
 import { apiRequest } from "@/lib/apiClient";
 import type {
 	EvenementMortalitePerte,
@@ -7,10 +8,6 @@ import type {
 } from "@/app/features/production/shared/mortalite-ui/types/mortalite.types";
 
 type ApiListResponse<T> = T[] | { results: T[] };
-
-function getResults<T>(response: ApiListResponse<T>): T[] {
-	return Array.isArray(response) ? response : response.results;
-}
 
 function query(params: Record<string, string | number | null | undefined>) {
 	const search = new URLSearchParams();
@@ -24,7 +21,7 @@ function query(params: Record<string, string | number | null | undefined>) {
 }
 
 async function getList<T>(endpoint: string) {
-	return getResults(await apiRequest<ApiListResponse<T>>(endpoint));
+	return listResults(await apiRequest<ApiListResponse<T>>(endpoint));
 }
 
 const EVENEMENTS = "/api/v1/effectifs/evenements-mortalite-perte/";

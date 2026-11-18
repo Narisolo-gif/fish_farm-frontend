@@ -1,5 +1,6 @@
 "use client";
 
+import { listResults } from "@/lib/formatters";
 import { useEffect, useMemo, useState } from "react";
 import { DataTable } from "@/components/DataTable";
 import { Button, SectionHeading, StatCard } from "@/components/ui";
@@ -27,10 +28,6 @@ import Link from "next/link";
 const rowsPerPage = 10;
 
 type ApiListResponse<T> = T[] | { results: T[] };
-
-function getResults<T>(response: ApiListResponse<T>): T[] {
-	return Array.isArray(response) ? response : response.results;
-}
 
 export function EcloserieDashboard() {
 	const [basins, setBasins] = useState<EnvironmentalBasin[]>([]);
@@ -66,12 +63,12 @@ export function EcloserieDashboard() {
 					apiRequest<ApiListResponse<LotRecord>>("/api/v1/lots/"),
 				]);
 				if (isActive) {
-					const loadedBasins = getResults(basinsResponse);
+					const loadedBasins = listResults(basinsResponse);
 					setBasins(loadedBasins);
-					setReproductions(getResults(reproductionsResponse));
-					setPontes(getResults(pontesResponse));
-					setEclosions(getResults(eclosionsResponse));
-					setLots(getResults(lotsResponse));
+					setReproductions(listResults(reproductionsResponse));
+					setPontes(listResults(pontesResponse));
+					setEclosions(listResults(eclosionsResponse));
+					setLots(listResults(lotsResponse));
 					// Bassins triés par date de création décroissante : le plus récent par défaut.
 					setSelectedBasinId(loadedBasins[0]?.id ?? null);
 				}

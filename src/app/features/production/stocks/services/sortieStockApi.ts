@@ -1,5 +1,6 @@
+import { listResults } from "@/lib/formatters";
 import { apiRequest } from "@/lib/apiClient";
-import { getResults, type ApiListResponse } from "@/app/features/production/stocks/services/stockApi";
+import { type ApiListResponse } from "@/app/features/production/stocks/services/stockApi";
 import type {
 	ApercuSortie,
 	BassinDestination,
@@ -10,14 +11,14 @@ import type {
 const SORTIES = "/api/v1/effectifs/sorties-stock/";
 
 export async function getSortiesDuLot(lotId: number) {
-	return getResults(
+	return listResults(
 		await apiRequest<ApiListResponse<SortieStock>>(`${SORTIES}?lot=${lotId}`),
 	);
 }
 
 /** Destination autorisée par le backend : bassin actif de catégorie GROSSISSEMENT. */
 export async function getBassinsDestination() {
-	const bassins = getResults(
+	const bassins = listResults(
 		await apiRequest<ApiListResponse<BassinDestination>>("/api/v1/bassins/?categorie=GROSSISSEMENT&statut=ACTIF", {
 		}),
 	);

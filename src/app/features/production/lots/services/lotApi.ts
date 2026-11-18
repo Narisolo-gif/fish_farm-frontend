@@ -1,3 +1,4 @@
+import { listResults } from "@/lib/formatters";
 import { apiRequest } from "@/lib/apiClient";
 import {
 	computeLotEffectif,
@@ -10,16 +11,12 @@ import type { MouvementEffectif } from "@/app/features/production/shared/mortali
 
 type ApiListResponse<T> = T[] | { results: T[] };
 
-function getResults<T>(response: ApiListResponse<T>): T[] {
-	return Array.isArray(response) ? response : response.results;
-}
-
 function lotUrl(lotId: number | string) {
 	return `/api/v1/lots/${encodeURIComponent(String(lotId))}/`;
 }
 
 export async function getLots() {
-	return getResults(
+	return listResults(
 		await apiRequest<ApiListResponse<LotRecord>>("/api/v1/lots/"),
 	);
 }
@@ -33,14 +30,14 @@ export async function getLot(lotId: number | string) {
  * (voir `computeLotEffectif`).
  */
 export async function getLotEffectif(lot: Pick<LotRecord, "id" | "quantite_initiale">) {
-	const mouvements = getResults(
+	const mouvements = listResults(
 		await apiRequest<ApiListResponse<MouvementEffectif>>("/api/v1/effectifs/"),
 	);
 	return computeLotEffectif(lot, mouvements);
 }
 
 export async function getEclosions() {
-	return getResults(
+	return listResults(
 		await apiRequest<ApiListResponse<LotEclosion>>("/api/v1/ecloserie/"),
 	);
 }
