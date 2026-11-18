@@ -42,7 +42,7 @@ Les pages et services existants cessent de lire le jeton eux-mêmes.
 
 ---
 
-### Tâche 1 : documentation de structure (README, ARCHITECTURE, archives)
+### Task 1: documentation de structure (README, ARCHITECTURE, archives)
 
 **Fichiers :**
 - Modifier : `README.md` (réécriture complète), `README_DOCKER.md` (supprimer la phrase « avec des données mockées »)
@@ -99,7 +99,7 @@ git add -A README.md README_DOCKER.md docs/ARCHITECTURE.md docs/archives archite
 git commit -m "docs: réécrire README, ajouter ARCHITECTURE et archiver l'ancienne architecture"
 ```
 
-### Tâche 2 : outillage de test et matrice des droits
+### Task 2: outillage de test et matrice des droits
 
 **Fichiers :**
 - Modifier : `package.json` (devDependency `vitest@3.2.4`, script `"test": "vitest run"`)
@@ -175,7 +175,7 @@ git add package.json package-lock.json vitest.config.ts src/lib/permissions.ts s
 git commit -m "feat(socle): matrice des droits côté interface et outillage Vitest"
 ```
 
-### Tâche 3 : normalisation des erreurs d'API
+### Task 3: normalisation des erreurs d'API
 
 **Fichiers :**
 - Créer : `src/lib/apiErrors.ts`, `src/lib/apiErrors.test.ts`
@@ -219,7 +219,7 @@ git add src/lib/apiErrors.ts src/lib/apiErrors.test.ts src/lib/apiClient.ts
 git commit -m "feat(socle): normaliser les erreurs d'API (400, 403, corps vide)"
 ```
 
-### Tâche 4 : session et client API authentifié
+### Task 4: session et client API authentifié
 
 **Fichiers :**
 - Créer : `src/lib/session.ts`, `src/lib/apiClient.test.ts`
@@ -265,7 +265,7 @@ git add src/lib/session.ts src/lib/apiClient.ts src/lib/apiClient.test.ts src/ap
 git commit -m "feat(socle): jeton automatique et refresh unique sur 401"
 ```
 
-### Tâche 5 : migrer les appels existants vers le client authentifié
+### Task 5: migrer les appels existants vers le client authentifié
 
 **Fichiers :**
 - Modifier : les fichiers listés par `grep -rln 'localStorage.getItem("access_token")' src`, sauf `session.ts`. Exemples : `src/app/features/production/lots/services/lotApi.ts`, `src/app/features/production/stocks/services/stockApi.ts`, `src/app/features/production/traitement/components/TraitementForm.tsx`, `src/app/admin/users/page.tsx`, `src/components/AppShell.tsx`.
@@ -295,7 +295,7 @@ git add -A src
 git commit -m "refactor(socle): tous les appels passent par le client authentifié"
 ```
 
-### Tâche 6 : utilisateur courant et `useCan`
+### Task 6: utilisateur courant et `useCan`
 
 **Fichiers :**
 - Créer : `src/lib/currentUser.ts`
@@ -333,7 +333,7 @@ git add src/lib/currentUser.ts src/lib/currentUser.test.ts src/lib/session.ts sr
 git commit -m "feat(socle): utilisateur courant partagé et useCan"
 ```
 
-### Tâche 7 : formatteurs
+### Task 7: formatteurs
 
 **Fichiers :**
 - Modifier : `src/lib/formatters.ts` (vide aujourd'hui)
@@ -379,7 +379,7 @@ git add src/lib/formatters.ts src/lib/formatters.test.ts src/app
 git commit -m "feat(socle): formatteurs (décimaux, dates, listes)"
 ```
 
-### Tâche 8 : état de l'intégration et recette
+### Task 8: état de l'intégration et recette
 
 **Fichiers :**
 - Créer : `docs/INTEGRATION.md`, `docs/RECETTE.md`
