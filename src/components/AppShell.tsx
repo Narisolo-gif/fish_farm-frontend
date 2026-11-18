@@ -2,9 +2,8 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { apiRequest, logout } from "@/lib/apiClient";
-import { getAccessToken } from "@/lib/session";
+import { logout } from "@/lib/apiClient";
+import { useCurrentUser } from "@/lib/currentUser";
 
 type SidebarProps = {
   isAdmin: boolean;
@@ -58,20 +57,8 @@ function Sidebar({ isAdmin, onLogout }: SidebarProps) {
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
-  const [username, setUsername] = useState("Utilisateur");
-
-  useEffect(() => {
-    const accessToken = getAccessToken();
-
-    if (!accessToken) {
-      return;
-    }
-
-    apiRequest<{ username: string }>("/api/auth/me/", {
-    })
-      .then((user) => setUsername(user.username))
-      .catch(() => undefined);
-  }, []);
+  const { user } = useCurrentUser();
+  const username = user?.username ?? "Utilisateur";
 
   async function handleLogout() {
     await logout();

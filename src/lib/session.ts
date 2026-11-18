@@ -21,8 +21,16 @@ export function setTokens(access: string, refresh: string): void {
 	s?.setItem(CLE_REFRESH, refresh);
 }
 
+const abonnes = new Set<() => void>();
+
+/** Appelé à chaque `clearSession()` (ex. pour vider le cache de l'utilisateur courant). */
+export function onSessionCleared(callback: () => void): void {
+	abonnes.add(callback);
+}
+
 export function clearSession(): void {
 	const s = stockage();
 	s?.removeItem(CLE_ACCES);
 	s?.removeItem(CLE_REFRESH);
+	abonnes.forEach((callback) => callback());
 }
