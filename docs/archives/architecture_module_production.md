@@ -1,3 +1,5 @@
+> **Obsolète (2026-11-18)** : arborescence et MCD de septembre, remplacés par [ARCHITECTURE.md](../ARCHITECTURE.md). Conservé pour l'historique.
+
 # Architecture du module Production — Next.js / TypeScript / Tailwind
 
 ## A. Analyse préalable (MCD + wireframe)

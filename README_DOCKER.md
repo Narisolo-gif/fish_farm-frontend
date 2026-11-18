@@ -2,8 +2,6 @@
 
 Frontend de l'application de pilotage piscicole **Fish Farm Anosy**, construit avec **Next.js, React et TypeScript**.
 
-Le projet reprend la hiérarchie des wireframes et fournit une navigation fonctionnelle avec des données mockées.
-
 L'application frontend est **dockerisée** et peut être lancée via Docker Compose.
 
 ---
@@ -141,12 +139,7 @@ docker compose exec frontend npm start
 
 ## Structure
 
-```text
-src/
-├── app/                    # routes App Router et styles globaux
-├── components/             # shell, en-têtes, boutons, tableaux et cartes
-└── lib/                    # données mockées et types partagés
-```
+Voir [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
 ---
 
@@ -192,15 +185,4 @@ git checkout -b feature/nom-de-la-feature
 
 ## État actuel du projet
 
-Le frontend constitue actuellement le **squelette fonctionnel** de l'application.
-
-Les éléments suivants sont prévus pour les prochaines étapes :
-
-* connexion au backend Django REST ;
-* appels API réels ;
-* authentification réelle ;
-* gestion des données métier ;
-* interactions avec la base de données ;
-* remplacement progressif des données mockées.
-
-Le backend n'est donc pas encore intégré au frontend à ce stade.
+Le frontend est branché sur le backend Django REST (`NEXT_PUBLIC_API_URL`, par défaut `http://localhost:8000`). L'état de l'intégration écran par écran est suivi dans [docs/INTEGRATION.md](docs/INTEGRATION.md).

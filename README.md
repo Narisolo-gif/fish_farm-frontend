@@ -1,47 +1,45 @@
 # Fish Farm Anosy — frontend
 
-Squelette frontend de l'application de pilotage piscicole, construit avec Next.js, React et TypeScript. Il reprend la hiérarchie des wireframes et fournit une navigation fonctionnelle avec des données mockées.
+Interface web de pilotage piscicole (Next.js, React, TypeScript), branchée sur l'API Django REST du dépôt `fish_farm-backend`.
 
-## Installation
+## Prérequis
 
-Pré-requis : Node.js 20+ et npm.
+- Node.js 20.9.0 ou plus récent, et npm.
+- Le backend lancé (par défaut sur `http://localhost:8000`) : voir le README du dépôt `fish_farm-backend`.
+
+## Configuration
+
+Créer `.env.local` à la racine :
+
+```bash
+NEXT_PUBLIC_API_URL=http://localhost:8000
+```
+
+## Lancement
 
 ```bash
 npm install
 npm run dev
 ```
 
-Ouvrir ensuite [http://localhost:3000](http://localhost:3000).
+Puis ouvrir [http://localhost:3000](http://localhost:3000).
 
-Pour vérifier la version de production :
+Avec Docker : voir [README_DOCKER.md](README_DOCKER.md).
 
-```bash
-npm run build
-npm start
-```
+## Scripts
 
-## Routes principales
+| Commande | Rôle |
+|---|---|
+| `npm run dev` | Serveur de développement |
+| `npm run build` puis `npm start` | Version de production |
+| `npm run lint` | ESLint |
+| `npm run typecheck` | Vérification TypeScript |
+| `npm run test` | Tests unitaires (Vitest) |
 
-- `/` : accueil et accès aux modules
-- `/login` : écran de connexion
-- `/dashboard` : indicateurs, graphiques placeholders et alertes
-- `/production` : vue des cinq modules
-- `/production/[module]` : dashboard d'un module
-- `/production/[module]/lots` : liste des lots
-- `/production/[module]/basins` : liste des bassins
-- `/basins/new` : formulaire de bassin
-- `/stock` : stock de provendes et mouvements
-- `/orders` : liste des commandes
-- `/orders/[reference]` : détail d'une commande
-- `/users` et `/users/new` : utilisateurs et formulaire
+## Documentation
 
-## Structure
-
-```text
-src/
-├── app/                 # routes App Router et styles globaux
-├── components/          # shell, en-têtes, boutons, tableaux et cartes
-└── lib/                 # données mockées et types partagés
-```
-
-Le backend, l'authentification réelle, les appels API et les interactions métier sont volontairement laissés pour les prochaines étapes.
+- [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) : routes, organisation par domaine, socle commun, conventions.
+- [docs/INTEGRATION.md](docs/INTEGRATION.md) : état de l'intégration écran par écran, écarts avec le backend.
+- [docs/RECETTE.md](docs/RECETTE.md) : données de test et checklists de recette par rôle.
+- Règles d'API et matrice des droits : [guide d'intégration du backend](../fish_farm-backend/context/GUIDE_INTEGRATION_FRONTEND.md) (source de référence).
+- Historique : [docs/archives/](docs/archives/).
